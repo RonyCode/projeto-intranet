@@ -1,0 +1,19 @@
+{
+  "name": "api/intranet",
+  "description": "A api for update own INTRANET ",
+  "type": "project",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "ronycode",
+      "email": "ronypc@outlook.com"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "\\Api\\Intranet": "/src"
+    }
+  },
+  "minimum-stability": "dev",
+  "require": {}
+}
