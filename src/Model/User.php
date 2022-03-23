@@ -148,5 +148,8 @@ class User
         return $this->idUser;
     }
 
-
+    public function dataSerialize(): array
+    {
+        return get_object_vars($this);
+    }
 }

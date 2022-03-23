@@ -12,6 +12,6 @@ interface UserInterface
 
     public function addUser(User $user): array;
 
-    public function checkHashEmail(User $user): array;
+//    public function checkHashEmail(User $user): array;
 
 }

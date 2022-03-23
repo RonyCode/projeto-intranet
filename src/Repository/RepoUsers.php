@@ -35,11 +35,21 @@ class RepoUsers extends GlobalConn implements UserInterface
     #[Pure] private static function newObjUser($data): User
     {
         return new User(
-            $data['id'],
-            $data['usename'],
-            $data['email'],
-            $data['pass'],
-            $data['hash']
+            $data['CODUSUARIO'],
+            $data['DATAHORA'],
+            $data['NOME'],
+            $data['MATRICULA'],
+            $data['CPF'],
+            $data['SENHA'],
+            $data['DATASENHA'],
+            $data['RESPSENHA'],
+            $data['TIPO'],
+            $data['SITUACAO'],
+            $data['NASCIMENTO'],
+            $data['EMAIL'],
+            $data['ULTIMOACESSO'],
+            $data['CONF'],
+            $data['FOTO']
         );
     }
 
@@ -47,22 +57,20 @@ class RepoUsers extends GlobalConn implements UserInterface
     {
         try {
             $row = $this->selectUser($user);
-            $validHash = password_verify($user->getPass(), $row["pass"]);
+            $validHash = password_verify($user->getPass(), $row["SENHA"]);
             if (!$validHash) {
                 throw new Exception();
             }
             $jwt = (new JwtHandler())->jwtEncode(
-                'localhost/api-ronycode/public/ by Ronycode',
-                [$row['email'], $row['id']]
+                'localhost/api-intranet-proj/public/ by Ronycode',
+                [$row['EMAIL'], $row['CODUSUARIO']]
             );
             return [
-                'id' => $row['id'],
-                'email' => $row['email'],
-                'username' => $row['username'],
+                'id' => $row['CODUSUARIO'],
+                'email' => $row['EMAIL'],
+                'nome' => $row['NOME'],
                 'token' => $jwt,
-                'photo_name' => $row['photo_name'],
-                'size' => $row['size'],
-                'src' => $row['src'],
+                'photo_name' => $row['FOTO'],
                 'status' => 'success',
                 'code' => 201,
             ];
@@ -75,9 +83,9 @@ class RepoUsers extends GlobalConn implements UserInterface
     {
         try {
             $stmt = self::conn()->prepare(
-                "SELECT * FROM user WHERE email = :email"
+                "SELECT * FROM AUT_USER WHERE CPF = :cpf"
             );
-            $stmt->bindValue(':email', $user->getEmail());
+            $stmt->bindValue(':cpf', $user->getConf());
             $stmt->execute();
             if ($stmt->rowCount() <= 0) {
                 throw new Exception();
@@ -85,23 +93,23 @@ class RepoUsers extends GlobalConn implements UserInterface
             return $stmt->fetch();
         } catch (Exception) {
             $this->responseCatchError(
-                'Usuário com este email não encontrado no banco de dados , tente novamente.'
+                'Usuário com este CPF não encontrado no banco de dados , tente novamente.'
             );
         }
     }
 
-    public function checkHashEmail(User $user): array
-    {
-        try {
-            $row = $this->selectUser($user);
-            if (!password_verify($row['email'], $user->getHash())) {
-                throw new Exception();
-            }
-            return $this->resetPass($user);
-        } catch (Exception) {
-            $this->responseCatchError('hash expirada ou inválida');
-        }
-    }
+//    public function checkHashEmail(User $user): array
+//    {
+//        try {
+//            $row = $this->selectUser($user);
+//            if (!password_verify($row['email'], $user->getHash())) {
+//                throw new Exception();
+//            }
+//            return $this->resetPass($user);
+//        } catch (Exception) {
+//            $this->responseCatchError('hash expirada ou inválida');
+//        }
+//    }
 
     private function resetPass(User $user): array
     {
