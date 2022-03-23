@@ -1,19 +1,36 @@
 {
-  "name": "api/intranet",
-  "description": "A api for update own INTRANET ",
+  "name": "api/ronycode",
+  "description": "projeto api intranet  de dashboard administrativo",
   "type": "project",
   "license": "MIT",
   "authors": [
     {
-      "name": "ronycode",
-      "email": "ronypc@outlook.com"
+      "name": "ronycod",
+      "email": "ronycode@gmail.com"
     }
   ],
+  "minimum-stability": "dev",
+  "require": {
+    "ext-pdo": "*",
+    "nyholm/psr7": "1.4.x-dev",
+    "nyholm/psr7-server": "dev-master",
+    "php-http/message-factory": "1.0.x-dev",
+    "psr/http-factory": "1.0.x-dev",
+    "psr/http-message": "1.0.x-dev",
+    "psr/http-server-handler": "1.0.x-dev",
+    "firebase/php-jwt": "dev-master",
+    "phpmailer/phpmailer": "dev-master",
+    "ext-ctype": "*",
+    "ext-mbstring": "*",
+    "ext-gd": "*",
+    "ext-cassandra": "*"
+  },
   "autoload": {
     "psr-4": {
-      "\\Api\\Intranet": "/src"
-    }
-  },
-  "minimum-stability": "dev",
-  "require": {}
+      "Api\\": "src/"
+    },
+    "files": [
+      "config/config.php"
+    ]
+  }
 }
