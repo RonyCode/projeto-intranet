@@ -5,7 +5,7 @@ namespace Api\Repository;
 use Api\Helper\JwtHandler;
 use Api\Helper\ResponseError;
 use Api\Helper\TemplateEmail;
-use Api\Infra\EmailForClient;
+use Api\Helper\ValidateParams;
 use Api\Infra\GlobalConn;
 use Api\Interface\UserInterface;
 use Api\Model\User;
@@ -34,20 +34,27 @@ class RepoUsers extends GlobalConn implements UserInterface
 
     #[Pure] private static function newObjUser($data): User
     {
+
+        $birthday = (new ValidateParams())->dateFormatDbToBr($data['NASCIMENTO']);
+        $dateHour = (new ValidateParams())->dateTimeFormatDbToBr($data['DATAHORA']);
+        $date_pass = (new ValidateParams())->dateTimeFormatDbToBr($data['DATASENHA']);
+        $lastAccess = (new ValidateParams())->dateTimeFormatDbToBr($data['ULTIMOACESSO']);
+
+
         return new User(
             $data['CODUSUARIO'],
-            $data['DATAHORA'],
+            $dateHour,
             $data['NOME'],
             $data['MATRICULA'],
             $data['CPF'],
             $data['SENHA'],
-            $data['DATASENHA'],
+            $date_pass,
             $data['RESPSENHA'],
             $data['TIPO'],
             $data['SITUACAO'],
-            $data['NASCIMENTO'],
+            $birthday,
             $data['EMAIL'],
-            $data['ULTIMOACESSO'],
+            $lastAccess,
             $data['CONF'],
             $data['FOTO']
         );
@@ -61,6 +68,7 @@ class RepoUsers extends GlobalConn implements UserInterface
             if (!$validHash) {
                 throw new Exception();
             }
+
             $jwt = (new JwtHandler())->jwtEncode(
                 'localhost/api-intranet-proj/public/ by Ronycode',
                 [$row['EMAIL'], $row['CODUSUARIO']]
@@ -70,7 +78,7 @@ class RepoUsers extends GlobalConn implements UserInterface
                 'email' => $row['EMAIL'],
                 'nome' => $row['NOME'],
                 'token' => $jwt,
-                'photo_name' => $row['FOTO'],
+                'photo' => $row['FOTO'],
                 'status' => 'success',
                 'code' => 201,
             ];
@@ -85,11 +93,12 @@ class RepoUsers extends GlobalConn implements UserInterface
             $stmt = self::conn()->prepare(
                 "SELECT * FROM AUT_USER WHERE CPF = :cpf"
             );
-            $stmt->bindValue(':cpf', $user->getConf());
+            $stmt->bindValue(':cpf', $user->getCpf());
             $stmt->execute();
             if ($stmt->rowCount() <= 0) {
                 throw new Exception();
             }
+
             return $stmt->fetch();
         } catch (Exception) {
             $this->responseCatchError(
@@ -98,26 +107,26 @@ class RepoUsers extends GlobalConn implements UserInterface
         }
     }
 
-//    public function checkHashEmail(User $user): array
-//    {
-//        try {
-//            $row = $this->selectUser($user);
-//            if (!password_verify($row['email'], $user->getHash())) {
-//                throw new Exception();
-//            }
-//            return $this->resetPass($user);
-//        } catch (Exception) {
-//            $this->responseCatchError('hash expirada ou inválida');
-//        }
-//    }
+    public function checkHashEmail(User $user): array
+    {
+        try {
+            $userFetch = $this->selectUser($user);
+            if (!password_verify($userFetch['SENHA'], $user->getPass())) {
+                throw new Exception();
+            }
+            return $this->resetPass($user);
+        } catch (Exception) {
+            $this->responseCatchError('hash expirada ou inválida');
+        }
+    }
 
     private function resetPass(User $user): array
     {
         try {
             $stmt = self::conn()->prepare(
-                "UPDATE user SET pass = :pass WHERE email = :email"
+                "UPDATE AUT_USER SET SENHA = :pass WHERE CPF = :cpf"
             );
-            $stmt->bindValue(":email", $user->getEmail());
+            $stmt->bindValue(":cpf", $user->getCpf());
             $stmt->bindValue(":pass", password_hash($user->getPass(), PASSWORD_ARGON2I));
             $stmt->execute();
             if ($stmt->rowCount() <= 0) {
@@ -137,46 +146,54 @@ class RepoUsers extends GlobalConn implements UserInterface
 
     public function recoverPass(User $user): array
     {
+
         try {
+            $userFetch = $this->selectUser($user);
             $stmtUp = self::conn()->prepare(
-                "UPDATE user SET hash = :hash, 
-                date_hash = :date_hash WHERE email = :email"
+                "INSERT INTO  SENHA_RECOVER_RESPAW (NAME_USER, CPF, HASH_TEMP,LAST_DATE_MODIF,DATE_EXPIRES) VALUES(:name, :cpf, :hash_temp, :last_date_modif, :date_expires) "
             );
-            $stmtUp->bindValue(":email", $user->getEmail());
-            $stmtUp->bindValue(":hash", password_hash($user->getEmail(), PASSWORD_ARGON2I));
-            $stmtUp->bindValue(":date_hash", date('Y-m-d H:i:s'));
+
+            $stmtUp->bindValue(":name", $userFetch["NOME"]);
+            $stmtUp->bindValue(":cpf", $user->getCpf());
+            $stmtUp->bindValue(":hash_temp", password_hash($userFetch["EMAIL"], PASSWORD_ARGON2I));
+            $stmtUp->bindValue(":last_date_modif", date('Y-m-d H:i:s'));
+            $stmtUp->bindValue(":date_expires", date('Y-m-d H:i:s', (strtotime('+ 1 min'))));
             $stmtUp->execute();
             if ($stmtUp->rowCount() <= 0) {
                 throw new Exception();
             }
-            $row = $this->selectUser($user);
-            $mail = (new EmailForClient())
-                ->add(
-                    SUBJET_MAIL,
-                    $this->bodyEmail(['user' => $user->getEmail(),
-                        "hash" => $row['hash']]),
-                    $row['email'],
-                    FROM_NAME_MAIL
-                )
-                ->send();
+//            $mail = (new EmailForClient())
+//                ->add(
+//                    SUBJET_MAIL,
+//                    $this->bodyEmail([$userFetch["EMAIL"],
+//                        "hash" => $userFetch['SENHA']]),
+//                    $userFetch['EMAIL'],
+//                    FROM_NAME_MAIL
+//                )
+//                ->send();
             return [
-                'data' => $mail,
+//                'data' => $mail,
                 'status' => 'success',
                 'code' => 201,
                 "message" => "Email enviado para recuperar sua senha"
             ];
+
         } catch (Exception) {
-            $this->responseCatchError("Usuário não encontrado, verifique se o email está correto");
+            $this->responseCatchError("Usuário não encontrado, verifique se o CPF está correto");
         }
+
     }
+
 
     public function addUser(User $user): array
     {
         try {
             $stmt = self::conn()->prepare(
-                "INSERT INTO user (username,email, pass) VALUES(:username,:email, :pass)"
+                "INSERT INTO AUT_USER (REGISTRATION,CPF, NASCIMENTO,EMAIL,SENHA) VALUES(:matricula, :cpf, :dataNasc, :email, :pass)"
             );
-            $stmt->bindValue(':username', $user->getUsername());
+            $stmt->bindValue(':matricula', $user->getRegistration());
+            $stmt->bindValue(':cpf', $user->getName());
+            $stmt->bindValue(':dataNasc', $user->getBirthday());
             $stmt->bindValue(':email', $user->getEmail());
             $stmt->bindValue(':pass', password_hash($user->getPass(), PASSWORD_ARGON2I));
             $stmt->execute();

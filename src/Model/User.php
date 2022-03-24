@@ -3,25 +3,23 @@
 namespace Api\Model;
 
 use Api\Helper\ValidateParams;
-use Cassandra\Date;
-use DateTime;
 
 class User
 {
     public function __construct(
         private ?int $idUser,
-        private ?DateTime $dateHour,
+        private ?string $dateHour,
         private ?string $name,
         private ?string $registration,
         private ?string $cpf,
         private ?string $pass,
-        private ?DateTime $datePass,
+        private ?string $datePass,
         private ?string $passAwnser,
         private ?string $type,
         private ?string $situation,
-        private ?Date $birthday,
+        private ?string $birthday,
         private ?string $email,
-        private ?DateTime $lastAccess,
+        private ?string $lastAccess,
         private ?int $conf,
         private ?string $photo,
     )
@@ -29,11 +27,11 @@ class User
     }
 
     /**
-     * @return DateTime|null
+     * @return string|null
      */
-    public function getDateHour(): ?DateTime
+    public function getDateHour(): ?string
     {
-        return $this->dateHour;
+        return (new ValidateParams())->dateTimeFormatBrToDb($this->dateHour);
     }
 
     /**
@@ -66,14 +64,15 @@ class User
     public function getPass(): ?string
     {
         return $this->pass;
+//        return (new ValidateParams())->validatePass($this->pass);
     }
 
     /**
-     * @return DateTime|null
+     * @return string|null
      */
-    public function getDatePass(): ?DateTime
+    public function getDatePass(): ?string
     {
-        return $this->datePass;
+        return (new ValidateParams())->dateTimeFormatBrToDb($this->datePass);
     }
 
     /**
@@ -101,11 +100,11 @@ class User
     }
 
     /**
-     * @return DATE|null
+     * @return string|null
      */
-    public function getBirthday(): ?DATE
+    public function getBirthday(): ?string
     {
-        return $this->birthday;
+        return (new ValidateParams())->validateBirthday($this->birthday);
     }
 
     /**
@@ -117,11 +116,11 @@ class User
     }
 
     /**
-     * @return DateTime|null
+     * @return string|null
      */
-    public function getLastAccess(): ?DateTime
+    public function getLastAccess(): ?string
     {
-        return $this->lastAccess;
+        return (new ValidateParams())->dateTimeFormatBrToDb($this->lastAccess);
     }
 
     /**

@@ -14,6 +14,8 @@ class ValidateParams
 
     public function __construct()
     {
+        date_default_timezone_set('America/Araguaina');
+
     }
 
 
@@ -25,12 +27,12 @@ class ValidateParams
 
             // Verifica se foi informado todos os digitos corretamente
             if (strlen($cpf) != 11) {
-                return false;
+                throw new Exception();
             }
 
             // Verifica se foi informada uma sequência de digitos repetidos. Ex: 111.111.111-11
             if (preg_match('/(\d)\1{10}/', $cpf)) {
-                return false;
+                throw new Exception();
             }
 
             // Faz o calculo para validar o CPF
@@ -40,42 +42,15 @@ class ValidateParams
                 }
                 $d = ((10 * $d) % 11) % 10;
                 if ($cpf[$c] != $d) {
-                    return false;
+                    throw new Exception();
                 }
             }
             return $cpf;
         } catch (Exception) {
             $this->responseCatchError(
-                "O CPF digitado não existe por favor tente novamente."
+                "O CPF digitado não existe ou foi digitado errado, por favor tente novamente."
             );
         }
-
-
-        // Extrai somente os números
-        $cpf = preg_replace('/[^0-9]/is', '', $cpf);
-
-        // Verifica se foi informado todos os digitos corretamente
-        if (strlen($cpf) != 11) {
-            return false;
-        }
-
-        // Verifica se foi informada uma sequência de digitos repetidos. Ex: 111.111.111-11
-        if (preg_match('/(\d)\1{10}/', $cpf)) {
-            return false;
-        }
-
-        // Faz o calculo para validar o CPF
-        for ($t = 9; $t < 11; $t++) {
-            for ($d = 0, $c = 0; $c < $t; $c++) {
-                $d += $cpf[$c] * (($t + 1) - $c);
-            }
-            $d = ((10 * $d) % 11) % 10;
-            if ($cpf[$c] != $d) {
-                return false;
-            }
-        }
-        return true;
-
     }
 
 
@@ -87,6 +62,22 @@ class ValidateParams
                 throw new Exception();
             } else {
                 return $date->format('d/m/Y');
+            }
+        } catch (Exception) {
+            $this->responseCatchError(
+                "Os dados referente a data dever ser exatamente assim XXXX-XX-XX vindo do banco de dados."
+            );
+        }
+    }
+
+    public function dateTimeFormatDbToBr($objDate): string
+    {
+        try {
+            $date = DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $objDate);
+            if (!$date) {
+                throw new Exception();
+            } else {
+                return $date->format('d/m/Y H:i:s');
             }
         } catch (Exception) {
             $this->responseCatchError(
@@ -180,7 +171,7 @@ class ValidateParams
                 throw new Exception();
             } else {
                 $dateFormated = new DateTime($date);
-                $interval = $dateFormated->diff(new DateTime(date('Y/m/d')));
+                $interval = $dateFormated->diff(new DateTime(date('Y/m/d ')));
                 return $interval->format('%Y');
             }
         } catch (Exception) {
@@ -195,7 +186,22 @@ class ValidateParams
             if (!$date) {
                 throw new Exception();
             } else {
-                return $date->format('Y-m-d');
+                return $date->format('Y-m-d ');
+            }
+        } catch (Exception) {
+            $this->responseCatchError('"Os dados referente a data dever ser exatamente neste formato XX/XX/XXXX.');
+        }
+    }
+
+
+    public function dateTimeFormatBrToDb($objDate): string
+    {
+        try {
+            $date = DateTimeImmutable::createFromFormat('d/m/Y', $objDate);
+            if (!$date) {
+                throw new Exception();
+            } else {
+                return $date->format("d-m-Y H:i:s");
             }
         } catch (Exception) {
             $this->responseCatchError('"Os dados referente a data dever ser exatamente neste formato XX/XX/XXXX.');

@@ -40,7 +40,7 @@
                                     24h para sua segurança utilize este link neste período, caso contrário refaça o
                                     processo de
                                     recuperação de senha.
-                                    <p><a style="text-decoration: none; color: #333333"
+                                    <p><a style="text-decoration: none;"
                                           href='http://localhost:3000/login/resetar/?hash=<?= $hash ?>'> Clique
                                             aqui </a>
                                     </p>

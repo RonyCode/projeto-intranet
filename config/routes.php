@@ -25,12 +25,12 @@ $arrayRotas = [
         '/error' => ErrorController::class
     ],
     $routesProtected => [
-        '/user' => GetAllStdController::class,
+        '/users' => GetAllStdController::class,
         '/user/id/' . $id => SelectStdController::class,
         '/user/salvar' => SaveStdController::class,
         '/aluno/deletar' => DeleteStdController::class,
-        '/usuario' => GetUserController::class,
-        '/usuario/foto/adicionar' => SavePhotoUserController::class,
+        '/user' => GetUserController::class,
+        '/user/foto/adicionar' => SavePhotoUserController::class,
 
     ],
 ];
