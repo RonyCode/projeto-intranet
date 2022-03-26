@@ -21,36 +21,18 @@ class ValidateParams
 
     public function validaCPF($cpf)
     {
+
         try {
-            // Extrai somente os números
-            $cpf = preg_replace('/[^0-9]/is', '', $cpf);
-
-            // Verifica se foi informado todos os digitos corretamente
-            if (strlen($cpf) != 11) {
+            $regex = "/^(([0-9]{3}.[0-9]{3}.[0-9]{3}-[0-9]{2})|([0-9]{11}))$/";
+            if (!preg_match($regex, $cpf, $match)) {
                 throw new Exception();
+            } else {
+                return $cpf;
             }
-
-            // Verifica se foi informada uma sequência de digitos repetidos. Ex: 111.111.111-11
-            if (preg_match('/(\d)\1{10}/', $cpf)) {
-                throw new Exception();
-            }
-
-            // Faz o calculo para validar o CPF
-            for ($t = 9; $t < 11; $t++) {
-                for ($d = 0, $c = 0; $c < $t; $c++) {
-                    $d += $cpf[$c] * (($t + 1) - $c);
-                }
-                $d = ((10 * $d) % 11) % 10;
-                if ($cpf[$c] != $d) {
-                    throw new Exception();
-                }
-            }
-            return $cpf;
         } catch (Exception) {
-            $this->responseCatchError(
-                "O CPF digitado não existe ou foi digitado errado, por favor tente novamente."
-            );
+            $this->responseCatchError("Erro CPF inválido");
         }
+
     }
 
 

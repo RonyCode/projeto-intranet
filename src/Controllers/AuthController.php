@@ -30,7 +30,7 @@ class AuthController implements RequestHandlerInterface
                 null, null, null,
                 null, null, null
             );
-            $response = (new RepoUsers())->userAuth($user);
+            $response = (new RepoUsers())->userAuthToken($user);
             return new Response(200, [], json_encode($response, JSON_UNESCAPED_UNICODE));
         } catch (Exception) {
             $this->responseCatchError('Não autenticado ou error nos verbos HTTPs');

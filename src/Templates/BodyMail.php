@@ -41,7 +41,7 @@
                                     processo de
                                     recuperação de senha.
                                     <p><a style="text-decoration: none;"
-                                          href='http://localhost:3000/login/resetar/?hash=<?= $hash ?>'> Clique
+                                          href='http://localhost/api-intranet-proj/public/login/resetar/?hash=<?= $hash ?>'> Clique
                                             aqui </a>
                                     </p>
 

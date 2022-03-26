@@ -21,10 +21,48 @@ const DBNAME_HOMOLOGACAO = 'intranet';
 const DBUSER_HOMOLOGACAO = 'root';
 const DBPASS_HOMOLOGACAO = '170286P@ra';
 
+//########################################################################################
+//CONFIG OF EVENT TO EXPIRES HASH AFTER 24H
+//########################################################################################
+//CREATE EVENT
+//    EXCLUIR_HASH
+//ON SCHEDULE EVERY
+//    30 SECOND
+//ON COMPLETION PRESERVE
+//DO
+//UPDATE SENHA_RECOVER_RESPAW SET HASH_TEMP = NULL WHERE DATE_EXPIRES < NOW();
+
+//########################################################################################
+//CONFIG FIELDS UNIQUE REGISTER
+//########################################################################################
+//CPF
+//EMAIL
+//########################################################################################
+
+
+//########################################################################################
+//CONFIG OF EVENT TO DELETE REPEATED DATA
+//########################################################################################
+//ALTER EVENT
+//    EXCLUI_DADOS_REPETIDOS
+//ON SCHEDULE EVERY
+//    5 second
+//ON COMPLETION PRESERVE
+//DO
+//    DELETE id_old FROM intranet.SENHA_RECOVER_RESPAW AS id_old,
+//                   intranet.SENHA_RECOVER_RESPAW AS id_new WHERE id_old.id < id_new.id;
+//########################################################################################
+
+
+
 ///CONFIG LOGIN JWT
 const JWTKEY = 'Ronyc0d3';
 
 /// CONFIG PHPMAILER
+/// !!!!ATENTION!!!! FOR USERS S.O LINUX APACHE USER THIS COMMANDS FOR GRANT PERMISSION ON SERVER
+/// sudo setsebool -P httpd_can_sendmail 1
+//  sudo setsebool -P httpd_can_network_connect 1
+
 const    HOST_MAIL = 'smtp.gmail.com';
 const    PORT_MAIL = '587';
 const    USER_MAIL = 'espaco.educar.palmas@gmail.com';

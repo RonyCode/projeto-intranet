@@ -21,8 +21,9 @@ class EmailForClient
         $this->mail->isSMTP();
         $this->mail->isHTML(true);
         $this->mail->setLanguage('br');
+//        UNCOMMENT FOR CAT BUGS!
 //        $this->mail->SMTPDebug = 4;
-        $this->mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+        $this->mail->SMTPSecure = "tls";
         $this->mail->CharSet = PHPMailer::CHARSET_UTF8;
         $this->mail->SMTPAuth = true;
         $this->mail->Host = HOST_MAIL;

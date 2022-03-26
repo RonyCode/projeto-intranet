@@ -39,7 +39,7 @@ class User
      */
     public function getName(): ?string
     {
-        return $this->name;
+        return (new ValidateParams())->validateName($this->name);
     }
 
     /**
@@ -64,6 +64,7 @@ class User
     public function getPass(): ?string
     {
         return $this->pass;
+        // IF WANT, UNCOMMENT THIS FOR USE THE REGEX THAT VALIDATES PASSWORD WITH 8 CHARACTERS WITH AT LEAST 1 LETTER
 //        return (new ValidateParams())->validatePass($this->pass);
     }
 

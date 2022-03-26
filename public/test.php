@@ -3,6 +3,8 @@
 //These must be at the top of your script, not inside a function
 
 //Load Composer's autoloader
+
+use Api\Infra\GlobalConn;
 use Api\Model\User;
 
 require '../vendor/autoload.php';
@@ -29,9 +31,4 @@ $user = new User(
 
 );
 
-//var_dump((new \Api\Helper\ValidateParams())->dateFormatDbToBr("2014-10-30"));
-var_dump((new \Api\Helper\ValidateParams())->dateTimeFormatDbToBr("2014-10-30 21:08:34"));
-var_dump((new \Api\Helper\ValidateParams())->dateFormatDbToBr("1986-02-17"));
-var_dump((new \Api\Helper\ValidateParams())->dateTimeFormatDbToBr("2022-03-21 13:15:42"));
-var_dump( date('Y-m-d H:i:s',(strtotime('+ 24 hour'))));
-deleteUser();
+var_dump($user->getBirthday());

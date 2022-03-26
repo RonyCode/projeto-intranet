@@ -6,6 +6,7 @@ use Api\Helper\JwtHandler;
 use Api\Helper\ResponseError;
 use Api\Helper\TemplateEmail;
 use Api\Helper\ValidateParams;
+use Api\Infra\EmailForClient;
 use Api\Infra\GlobalConn;
 use Api\Interface\UserInterface;
 use Api\Model\User;
@@ -60,12 +61,12 @@ class RepoUsers extends GlobalConn implements UserInterface
         );
     }
 
-    public function userAuth(User $user): array
+    public function userAuthToken(User $user): array
     {
         try {
             $row = $this->selectUser($user);
-            $validHash = password_verify($user->getPass(), $row["SENHA"]);
-            if (!$validHash) {
+
+            if (!password_verify($user->getPass(), $row["SENHA"])) {
                 throw new Exception();
             }
 
@@ -107,16 +108,48 @@ class RepoUsers extends GlobalConn implements UserInterface
         }
     }
 
-    public function checkHashEmail(User $user): array
+    public function checkHashEmail(User $user, $hash): array
     {
         try {
-            $userFetch = $this->selectUser($user);
-            if (!password_verify($userFetch['SENHA'], $user->getPass())) {
+            $stmt = $this->selectUser($user);
+            $stmtHash = $this->selectHashTmp($user);
+
+            //VERIFIED TWICE TABLE USER_AUTH AND HASH_TEMP AND HASH SENT FROM EMAIL NO EXPIRED
+            if (password_verify($stmt['EMAIL'], str_replace(" ", "+", $hash))) {
                 throw new Exception();
             }
+            if (!password_verify($stmt['EMAIL'], $stmtHash["HASH_TEMP"])) {
+                throw new Exception();
+            }
+
+            // ONCE TIME PASSES OF CONSULT, DELETE HASH TO USE ONCE TIME
+            $hashOnce = self::conn()->prepare(
+                "UPDATE SENHA_RECOVER_RESPAW SET HASH_TEMP = null WHERE CPF = :cpf"
+            );
+            $hashOnce->bindValue(":cpf", $user->getCpf());
+            $hashOnce->execute();
             return $this->resetPass($user);
         } catch (Exception) {
             $this->responseCatchError('hash expirada ou inválida');
+        }
+    }
+
+    public function selectHashTmp(User $user): array
+    {
+        try {
+            //CHECKS IF USER EXIST AND CALL THE HASH VALID AND NO EXPIRED
+            $this->selectUser($user);
+            $hash_temp = self::conn()->prepare("SELECT * FROM SENHA_RECOVER_RESPAW  WHERE  CPF = :cpf");
+            $hash_temp->bindValue(":cpf", $user->getCpf());
+            $hash_temp->execute();
+            if ($hash_temp->rowCount() <= 0) {
+                throw  new Exception();
+            }
+            return $hash_temp->fetch();
+        } catch (Exception) {
+            $this->responseCatchError(
+                'CPF não encontrado Ou link do HASH pelo e-mail expirado!'
+            );
         }
     }
 
@@ -149,30 +182,36 @@ class RepoUsers extends GlobalConn implements UserInterface
 
         try {
             $userFetch = $this->selectUser($user);
+
             $stmtUp = self::conn()->prepare(
-                "INSERT INTO  SENHA_RECOVER_RESPAW (NAME_USER, CPF, HASH_TEMP,LAST_DATE_MODIF,DATE_EXPIRES) VALUES(:name, :cpf, :hash_temp, :last_date_modif, :date_expires) "
+                "INSERT INTO  SENHA_RECOVER_RESPAW (NAME_USER, CPF, HASH_TEMP, LAST_DATE_MODIF, DATE_EXPIRES) VALUES(:name, :cpf, :hash_temp, :last_date_modif, :date_expires) "
             );
 
             $stmtUp->bindValue(":name", $userFetch["NOME"]);
             $stmtUp->bindValue(":cpf", $user->getCpf());
             $stmtUp->bindValue(":hash_temp", password_hash($userFetch["EMAIL"], PASSWORD_ARGON2I));
             $stmtUp->bindValue(":last_date_modif", date('Y-m-d H:i:s'));
-            $stmtUp->bindValue(":date_expires", date('Y-m-d H:i:s', (strtotime('+ 1 min'))));
+            //HASH TEMP EXPIRES AFTER 24 HOURS CHECK THE FOLDER CONFIG , AND EVENT MYSQL ON CONFIG.PHP
+            $stmtUp->bindValue(":date_expires", date('Y-m-d H:i:s', (strtotime('+ 24 hour'))));
             $stmtUp->execute();
             if ($stmtUp->rowCount() <= 0) {
-                throw new Exception();
+
+                throw  new Exception();
             }
-//            $mail = (new EmailForClient())
-//                ->add(
-//                    SUBJET_MAIL,
-//                    $this->bodyEmail([$userFetch["EMAIL"],
-//                        "hash" => $userFetch['SENHA']]),
-//                    $userFetch['EMAIL'],
-//                    FROM_NAME_MAIL
-//                )
-//                ->send();
+
+            $rowHash = $this->selectHashTmp($user);
+            $mail = (new EmailForClient())
+                ->add(
+                    SUBJET_MAIL,
+                    $this->bodyEmail(["user" => $userFetch["EMAIL"],
+                        "hash" => $rowHash["HASH_TEMP"]]),
+                    $userFetch['EMAIL'],
+                    FROM_NAME_MAIL
+                )
+                ->send();
+
             return [
-//                'data' => $mail,
+                'data' => $mail,
                 'status' => 'success',
                 'code' => 201,
                 "message" => "Email enviado para recuperar sua senha"
@@ -184,19 +223,21 @@ class RepoUsers extends GlobalConn implements UserInterface
 
     }
 
-
     public function addUser(User $user): array
     {
         try {
+
+//            CONFIG FIELDS CPF AND EMAIL UNIQUE REGISTER FOR NO ERRORS!!! SEE FOLDER CONFIG FILE CONFIG.PHP
             $stmt = self::conn()->prepare(
-                "INSERT INTO AUT_USER (REGISTRATION,CPF, NASCIMENTO,EMAIL,SENHA) VALUES(:matricula, :cpf, :dataNasc, :email, :pass)"
+                "INSERT INTO AUT_USER (MATRICULA,CPF, NASCIMENTO,EMAIL,SENHA) VALUES(:matricula, :cpf, :dataNasc, :email, :pass)"
             );
             $stmt->bindValue(':matricula', $user->getRegistration());
-            $stmt->bindValue(':cpf', $user->getName());
+            $stmt->bindValue(':cpf', $user->getCpf());
             $stmt->bindValue(':dataNasc', $user->getBirthday());
             $stmt->bindValue(':email', $user->getEmail());
             $stmt->bindValue(':pass', password_hash($user->getPass(), PASSWORD_ARGON2I));
             $stmt->execute();
+
             if ($stmt->rowCount() <= 0) {
                 throw new Exception();
             }
@@ -208,7 +249,7 @@ class RepoUsers extends GlobalConn implements UserInterface
             ];
         } catch (Exception) {
             $this->responseCatchError(
-                'Usuário já cadastrado ou não pode ser cadastrado com este email, tente novamente.'
+                'Usuário já cadastrado ou não pode ser cadastrado com este CPF, tente novamente.'
             );
         }
     }
