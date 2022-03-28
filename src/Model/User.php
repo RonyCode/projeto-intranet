@@ -55,7 +55,7 @@ class User
      */
     public function getCpf(): ?string
     {
-        return (new ValidateParams())->validaCPF($this->cpf);
+        return (new ValidateParams())->validateCpf($this->cpf);
     }
 
     /**

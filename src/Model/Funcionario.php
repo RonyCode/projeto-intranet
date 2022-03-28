@@ -37,7 +37,7 @@ class Funcionario
         private ?string $tipo,
         private ?string $situacao,
         private ?string $foto,
-        private ?int $dataSituacao,
+        private ?string $dataSituacao,
     )
     {
     }
@@ -159,7 +159,7 @@ class Funcionario
      */
     public function getFRH(): ?string
     {
-        return $this->fRH;
+        return (new ValidateParams())->validateFrh($this->fRH);
     }
 
     /**
@@ -167,7 +167,7 @@ class Funcionario
      */
     public function getNaturalidade(): ?string
     {
-        return $this->naturalidade;
+        return (new ValidateParams())->validateName($this->naturalidade);
     }
 
     /**
@@ -175,7 +175,7 @@ class Funcionario
      */
     public function getUfNaturalidade(): ?string
     {
-        return $this->ufNaturalidade;
+        return (new ValidateParams())->validateSigla2Letras($this->ufNaturalidade);
     }
 
     /**
@@ -199,7 +199,7 @@ class Funcionario
      */
     public function getDataNascimento(): ?string
     {
-        return $this->dataNascimento;
+        return (new ValidateParams())->validateBirthday($this->dataNascimento);
     }
 
     /**
@@ -207,7 +207,7 @@ class Funcionario
      */
     public function getCpf(): ?string
     {
-        return $this->cpf;
+        return (new ValidateParams())->validateCpf($this->cpf);
     }
 
     /**
@@ -239,7 +239,7 @@ class Funcionario
      */
     public function getDataExpedicao(): ?string
     {
-        return $this->dataExpedicao;
+        return (new ValidateParams())->dateTimeFormatBrToDb($this->dataExpedicao);
     }
 
     /**
@@ -267,11 +267,11 @@ class Funcionario
     }
 
     /**
-     * @return int|null
+     * @return string|null
      */
-    public function getDataSituacao(): ?int
+    public function getDataSituacao(): ?string
     {
-        return $this->dataSituacao;
+        return (new ValidateParams())->dateTimeFormatBrToDb($this->dataSituacao);
     }
 
     /**

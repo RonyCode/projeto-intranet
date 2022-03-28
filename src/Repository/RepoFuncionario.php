@@ -139,6 +139,7 @@ class RepoFuncionario extends GlobalConn implements FuncionarioInterface
                     PASEP = :pasep,
                     REGNASCIMENTO = :regNascimento,
                     LOCALEXPEDICAO = :localExpedicao,
+                    DATAEXPEDICAO = :dataExpedicao,
                     TIPO = :tipo,
                     SITUACAO = :situacao,
                     FOTO = :foto,
@@ -155,7 +156,7 @@ class RepoFuncionario extends GlobalConn implements FuncionarioInterface
             $stmt->bindValue(':nome', $funcionario->getNome(), PDO::PARAM_STR_CHAR);
             $stmt->bindValue(':nomeGuerra', $funcionario->getNomeGuerra(), PDO::PARAM_STR_CHAR);
             $stmt->bindValue(':postoGraduacao', $funcionario->getPostoGraduacao(), PDO::PARAM_STR_CHAR);
-            $stmt->bindValue(':codPostoGraduacao', $funcionario->getPostoGraduacao(), PDO::PARAM_INT);
+            $stmt->bindValue(':codPostoGraduacao', $funcionario->getCodPostoGraduacaoQuadros(), PDO::PARAM_INT);
             $stmt->bindValue(':nomePai', $funcionario->getNomePai(), PDO::PARAM_STR_CHAR);
             $stmt->bindValue(':nomeMae', $funcionario->getNomeMae(), PDO::PARAM_STR_CHAR);
             $stmt->bindValue(':ts', $funcionario->getTs(), PDO::PARAM_STR_CHAR);
@@ -169,6 +170,7 @@ class RepoFuncionario extends GlobalConn implements FuncionarioInterface
             $stmt->bindValue(':pasep', $funcionario->getPasep(), PDO::PARAM_STR_CHAR);
             $stmt->bindValue(':regNascimento', $funcionario->getRegNascimento(), PDO::PARAM_STR_CHAR);
             $stmt->bindValue(':localExpedicao', $funcionario->getLocalExpedicao(), PDO::PARAM_STR_CHAR);
+            $stmt->bindValue(':dataExpedicao', $funcionario->getDataExpedicao(), PDO::PARAM_STR_CHAR);
             $stmt->bindValue(':tipo', $funcionario->getTipo(), PDO::PARAM_STR_CHAR);
             $stmt->bindValue(':situacao', $funcionario->getSituacao(), PDO::PARAM_STR_CHAR);
             $stmt->bindValue(':foto', $funcionario->getFoto(), PDO::PARAM_STR_CHAR);
@@ -198,7 +200,7 @@ class RepoFuncionario extends GlobalConn implements FuncionarioInterface
                     UFNATURALIDADE, FD1 ,
                     FD2, DATANASCIMENTO,
                     CPF, PASEP, REGNASCIMENTO, 
-                    LOCALEXPEDICAO, TIPO,
+                    LOCALEXPEDICAO, DATAEXPEDICAO,TIPO,
                     SITUACAO, FOTO, DATASITUACAO
                     )  VALUES ( 
                                 :matricula, :matriculaNova,:vinculo, 
@@ -209,7 +211,7 @@ class RepoFuncionario extends GlobalConn implements FuncionarioInterface
                                 :nomeMae, :ts, :frh, :naturalidade,
                                 :ufNaturalidade, :fd1, :fd2, :dataNascimento,
                                 :cpf, :pasep, :regNascimento, :localExpedicao,
-                                :tipo, :situacao, :foto, :dataSituacao
+                                :dataExpedicao,:tipo, :situacao, :foto, :dataSituacao
                                 ) "
             );
             $stmt->bindValue(':matricula', $funcionario->getMatricula(), PDO::PARAM_STR_CHAR);
@@ -221,7 +223,7 @@ class RepoFuncionario extends GlobalConn implements FuncionarioInterface
             $stmt->bindValue(':nome', $funcionario->getNome(), PDO::PARAM_STR_CHAR);
             $stmt->bindValue(':nomeGuerra', $funcionario->getNomeGuerra(), PDO::PARAM_STR_CHAR);
             $stmt->bindValue(':postoGraduacao', $funcionario->getPostoGraduacao(), PDO::PARAM_STR_CHAR);
-            $stmt->bindValue(':codPostoGraduacao', $funcionario->getPostoGraduacao(), PDO::PARAM_INT);
+            $stmt->bindValue(':codPostoGraduacao', $funcionario->getCodPostoGraduacaoQuadros(), PDO::PARAM_INT);
             $stmt->bindValue(':nomePai', $funcionario->getNomePai(), PDO::PARAM_STR_CHAR);
             $stmt->bindValue(':nomeMae', $funcionario->getNomeMae(), PDO::PARAM_STR_CHAR);
             $stmt->bindValue(':ts', $funcionario->getTs(), PDO::PARAM_STR_CHAR);
@@ -235,6 +237,7 @@ class RepoFuncionario extends GlobalConn implements FuncionarioInterface
             $stmt->bindValue(':pasep', $funcionario->getPasep(), PDO::PARAM_STR_CHAR);
             $stmt->bindValue(':regNascimento', $funcionario->getRegNascimento(), PDO::PARAM_STR_CHAR);
             $stmt->bindValue(':localExpedicao', $funcionario->getLocalExpedicao(), PDO::PARAM_STR_CHAR);
+            $stmt->bindValue(':dataExpedicao', $funcionario->getDataExpedicao(), PDO::PARAM_STR_CHAR);
             $stmt->bindValue(':tipo', $funcionario->getTipo(), PDO::PARAM_STR_CHAR);
             $stmt->bindValue(':situacao', $funcionario->getSituacao(), PDO::PARAM_STR_CHAR);
             $stmt->bindValue(':foto', $funcionario->getFoto(), PDO::PARAM_STR_CHAR);

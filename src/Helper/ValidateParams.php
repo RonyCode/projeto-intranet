@@ -19,7 +19,7 @@ class ValidateParams
     }
 
 
-    public function validaCPF($cpf)
+    public function validateCpf($cpf)
     {
 
         try {
@@ -30,20 +30,20 @@ class ValidateParams
                 return $cpf;
             }
         } catch (Exception) {
-            $this->responseCatchError("Erro CPF inválido");
+            $this->responseCatchError("O campo CPF deve seguir esta máscara 11 números sem ponto . ou traço -  XXXXXXXXXXX");
         }
 
     }
 
 
-    public function dateFormatDbToBr($objDate): string
+    public function dateFormatDbToBr($objDate): ?string
     {
         try {
-            $date = DateTimeImmutable::createFromFormat('Y-m-d', $objDate);
+            $date = DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $objDate);
             if (!$date) {
                 throw new Exception();
             } else {
-                return $date->format('d/m/Y');
+                return $date->format('d/m/Y H:i:s');
             }
         } catch (Exception) {
             $this->responseCatchError(
@@ -52,9 +52,12 @@ class ValidateParams
         }
     }
 
-    public function dateTimeFormatDbToBr($objDate): string
+    public function dateTimeFormatDbToBr($objDate): ?string
     {
         try {
+            if ($objDate === null) {
+                return null;
+            }
             $date = DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $objDate);
             if (!$date) {
                 throw new Exception();
@@ -79,7 +82,7 @@ class ValidateParams
         }
     }
 
-    public function validatePass(string $pass): string
+    public function validatePass(string $pass): ?string
     {
         try {
             $regex = "/^\S*(?=\S{8,})(?=\S*[a-zA-Z])(?=\S*[\d])\S*$/";
@@ -93,7 +96,7 @@ class ValidateParams
         }
     }
 
-    public function validateName(string $name): string
+    public function validateName(string $name): ?string
     {
         try {
             $regex = "/^[A-Za-záàâãéèêíïóôõöúçñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ ]+$/";
@@ -109,7 +112,7 @@ class ValidateParams
         }
     }
 
-    public function validateSigla2Letras(string $sigla): string
+    public function validateSigla2Letras(string $sigla): ?string
     {
         try {
             $regex = "/^[A-Z]{0,2}$/";
@@ -128,7 +131,7 @@ class ValidateParams
     public function validateFrh(string $fRh): string
     {
         try {
-            $regex = "/^[a-z]\.{0,4}$/";
+            $regex = "/^[A-Z].{0,3}$/";
             if (!preg_match($regex, $fRh, $match)) {
                 throw new Exception();
             }
@@ -136,13 +139,14 @@ class ValidateParams
             return $fRh;
         } catch (Exception) {
             $this->responseCatchError(
-                "Tipo sanguíneo inválido o campo dever seguir exatamente esta máscara X ou XX!"
+                "Fator RH sanguíneo deve seguir exatamente esta máscara LETRA MAIÚSCULA com 3 caracteres 
+                seguidos de ponto POS. ou NEG.  !"
             );
         }
     }
 
 
-    public function validateAddress(string $address): string
+    public function validateAddress(string $address): ?string
     {
         try {
             $regex = "/^[A-Za-záàâãéèêíïóôõöúçñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ 0-9]+$/";
@@ -157,9 +161,7 @@ class ValidateParams
         }
     }
 
-    public
-
-    function validateRg(string $rg): string
+    public function validateRg(string $rg): ?string
     {
         try {
 
@@ -176,7 +178,7 @@ class ValidateParams
     }
 
 
-    function validateOrgaoEmissor(string $orgaoEmissor): string
+    function validateOrgaoEmissor(string $orgaoEmissor): ?string
     {
         try {
 
@@ -192,7 +194,7 @@ class ValidateParams
         }
     }
 
-    public function validatePhone(string $phone): string
+    public function validatePhone(string $phone): ?string
     {
         try {
             $regex = "/^\(?[1-9]{2}\)? ?(?:[2-8]|9[1-9])[0-9]{3}\-?[0-9]{4}$/";
@@ -207,7 +209,7 @@ class ValidateParams
         }
     }
 
-    public function validateAge(string $birthday): string
+    public function validateAge(string $birthday): ?string
     {
         try {
             $this->date = $birthday;
@@ -225,14 +227,14 @@ class ValidateParams
         }
     }
 
-    public function dateFormatBrToDb($objDate): string
+    public function dateFormatBrToDb($objDate): ?string
     {
         try {
             $date = DateTimeImmutable::createFromFormat('d/m/Y', $objDate);
             if (!$date) {
                 throw new Exception();
             } else {
-                return $date->format('Y-m-d ');
+                return $date->format('Y-m-d');
             }
         } catch (Exception) {
             $this->responseCatchError('"Os dados referente a data dever ser exatamente neste formato XX/XX/XXXX.');
@@ -240,21 +242,21 @@ class ValidateParams
     }
 
 
-    public function dateTimeFormatBrToDb($objDate): string
+    public function dateTimeFormatBrToDb($objDate): ?string
     {
         try {
             $date = DateTimeImmutable::createFromFormat('d/m/Y', $objDate);
             if (!$date) {
                 throw new Exception();
             } else {
-                return $date->format("d-m-Y H:i:s");
+                return $date->format("Y-m-d H:i:s");
             }
         } catch (Exception) {
             $this->responseCatchError('"Os dados referente a data dever ser exatamente neste formato XX/XX/XXXX.');
         }
     }
 
-    public function validateBirthday(string $birthday): string
+    public function validateBirthday(string $birthday): ?string
     {
         try {
             return $this->dateFormatBrToDb($birthday);
@@ -263,7 +265,7 @@ class ValidateParams
         }
     }
 
-    public function validateInteger(int $numeral): int
+    public function validateInteger(int $numeral): ?int
     {
         try {
             $regex = "/^[1-9]\d*$/";
@@ -278,7 +280,7 @@ class ValidateParams
         }
     }
 
-    public function validateMatricula(string $numeral): string
+    public function validateMatricula(string $numeral): ?string
     {
         try {
             $regex = "/^\d{0,8}$/";
