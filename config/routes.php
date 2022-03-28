@@ -5,7 +5,7 @@ namespace config\routes;
 use Api\Controllers\AuthController;
 use Api\Controllers\DeleteStdController;
 use Api\Controllers\ErrorController;
-use Api\Controllers\GetAllStdController;
+use Api\Controllers\GetAllFuncionarioController;
 use Api\Controllers\GetUserController;
 use Api\Controllers\RecoverPassController;
 use Api\Controllers\RegisterLoginController;
@@ -25,7 +25,7 @@ $arrayRotas = [
         '/error' => ErrorController::class
     ],
     $routesProtected => [
-        '/users' => GetAllStdController::class,
+        '/funcionarios' => GetAllFuncionarioController::class,
         '/user/id/' . $id => SelectStdController::class,
         '/user/salvar' => SaveStdController::class,
         '/aluno/deletar' => DeleteStdController::class,

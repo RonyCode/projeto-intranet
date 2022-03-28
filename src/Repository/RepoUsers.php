@@ -41,7 +41,6 @@ class RepoUsers extends GlobalConn implements UserInterface
         $date_pass = (new ValidateParams())->dateTimeFormatDbToBr($data['DATASENHA']);
         $lastAccess = (new ValidateParams())->dateTimeFormatDbToBr($data['ULTIMOACESSO']);
 
-
         return new User(
             $data['CODUSUARIO'],
             $dateHour,

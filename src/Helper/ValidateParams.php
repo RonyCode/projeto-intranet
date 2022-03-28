@@ -86,6 +86,7 @@ class ValidateParams
             if (!preg_match($regex, $pass, $match)) {
                 throw new Exception();
             }
+
             return $pass;
         } catch (Exception) {
             $this->responseCatchError("Erro, senha dever ter pelo menos 1 letra, 1 numero e no mínimo 8 caracteres.");
@@ -100,18 +101,46 @@ class ValidateParams
                 throw new Exception();
             }
 
-            $name = explode(' ', $name);
-            $nametrated = [];
-            foreach ($name as $nameSepared) {
-                $nametrated[] = ucfirst(mb_strtolower($nameSepared));
-            }
-            return (implode(' ', $nametrated));
+            return $name;
         } catch (Exception) {
             $this->responseCatchError(
                 "Digite apenas letras no campo nome, números ou caracteres especiais não serão aceitos."
             );
         }
     }
+
+    public function validateSigla2Letras(string $sigla): string
+    {
+        try {
+            $regex = "/^[A-Z]{0,2}$/";
+            if (!preg_match($regex, $sigla, $match)) {
+                throw new Exception();
+            }
+
+            return $sigla;
+        } catch (Exception) {
+            $this->responseCatchError(
+                "Tipo sanguíneo inválido o campo dever seguir exatamente esta máscara X ou XX!"
+            );
+        }
+    }
+
+    public function validateFrh(string $fRh): string
+    {
+        try {
+            $regex = "/^[a-z]\.{0,4}$/";
+            if (!preg_match($regex, $fRh, $match)) {
+                throw new Exception();
+            }
+
+            return $fRh;
+        } catch (Exception) {
+            $this->responseCatchError(
+                "Tipo sanguíneo inválido o campo dever seguir exatamente esta máscara X ou XX!"
+            );
+        }
+    }
+
 
     public function validateAddress(string $address): string
     {
@@ -124,6 +153,41 @@ class ValidateParams
         } catch (Exception) {
             $this->responseCatchError(
                 "Digite apenas letras ou numeros no campo endereço, caracteres especiais não serão aceitos"
+            );
+        }
+    }
+
+    public
+
+    function validateRg(string $rg): string
+    {
+        try {
+
+            $regex = "/(\d{1,2}\.)(\d{3}\-)(\d{2})/";
+            if (!preg_match($regex, $rg, $match)) {
+                throw new Exception();
+            }
+            return mb_strtoupper($rg);
+        } catch (Exception) {
+            $this->responseCatchError(
+                "Rg inválido o campo rg dever seguir exatamente esta máscara 99.999-99!"
+            );
+        }
+    }
+
+
+    function validateOrgaoEmissor(string $orgaoEmissor): string
+    {
+        try {
+
+            $regex = "/^([A-Z]{0,5})$/";
+            if (!preg_match($regex, $orgaoEmissor, $match)) {
+                throw new Exception();
+            }
+            return mb_strtoupper($orgaoEmissor);
+        } catch (Exception) {
+            $this->responseCatchError(
+                "Orgão Emissor inválido, o campo dever seguir exatamente esta máscara 5 letras MAIÚSCULAS: XXXXX!"
             );
         }
     }
@@ -210,6 +274,23 @@ class ValidateParams
         } catch (Exception) {
             $this->responseCatchError(
                 "Error: Somente números serão aceito para esse formulário."
+            );
+        }
+    }
+
+    public function validateMatricula(string $numeral): string
+    {
+        try {
+            $regex = "/^\d{0,8}$/";
+
+            if (!preg_match($regex, $numeral, $match, PREG_UNMATCHED_AS_NULL)) {
+                throw new Exception();
+            } else {
+                return $numeral;
+            }
+        } catch (Exception) {
+            $this->responseCatchError(
+                "Error: matrícula deve conter no máximo 8 números exemplo 99999999 sem o traço e código verificador"
             );
         }
     }
