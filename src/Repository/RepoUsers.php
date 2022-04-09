@@ -51,7 +51,6 @@ class RepoUsers extends GlobalConn implements UserInterface
 
     #[Pure] private static function newObjUser($data): User
     {
-
         $nascimento = (new ValidateParams())->dateFormatDbToBr($data['nascimento']);
         $dataUser = (new ValidateParams())->dateTimeFormatDbToBr($data['data_user']);
         $dataExpRg = (new ValidateParams())->dateFormatDbToBr($data['data_exp_rg']);
@@ -87,11 +86,9 @@ class RepoUsers extends GlobalConn implements UserInterface
     {
         try {
             $row = $this->selectUser($user);
-
             if (!password_verify($user->getSenha(), $row["senha"])) {
                 throw new Exception();
             }
-
             $jwt = (new JwtHandler())->jwtEncode(
                 'localhost/api-intranet-proj/public/ by Ronycode',
                 [$row['email'], $row['id_user']]
@@ -143,7 +140,6 @@ class RepoUsers extends GlobalConn implements UserInterface
             if (!password_verify($stmt['email'], $stmtHash["hash_temp"])) {
                 throw new Exception();
             }
-
             // ONCE TIME PASSES OF CONSULT, DELETE HASH TO USE ONCE TIME
             $hashOnce = self::conn()->prepare(
                 "UPDATE senha_respawn SET hash_temp = null WHERE cpf = :cpf"
@@ -203,7 +199,6 @@ class RepoUsers extends GlobalConn implements UserInterface
     {
 
         try {
-
             $userFetch = $this->selectUser($user);
             $stmtUp = self::conn()->prepare(
                 "INSERT INTO  senha_respawn (name_user, cpf, hash_temp, last_date_modif, date_expires) VALUES(:name, :cpf, :hash_temp, :last_date_modif, :date_expires) "
@@ -242,7 +237,6 @@ class RepoUsers extends GlobalConn implements UserInterface
         } catch (Exception) {
             $this->responseCatchError("Usuário não encontrado, verifique se o CPF está correto");
         }
-
     }
 
     public function addUser(User $user): array
