@@ -11,7 +11,7 @@ use Api\Controllers\UserSelectedController;
 use Api\Controllers\LoginRecoverPassController;
 use Api\Controllers\LoginRegisterController;
 use Api\Controllers\LoginResetPassController;
-use Api\Controllers\SavePhotoUserController;
+use Api\Controllers\PhotoUserSaveController;
 use Api\Controllers\SaveStdController;
 use Api\Controllers\SelectStdController;
 use Api\Infra\Router;
@@ -32,7 +32,7 @@ $arrayRotas = [
         '/user/salvar' => SaveStdController::class,
         '/aluno/deletar' => DeleteStdController::class,
         '/user' => UserSelectedController::class,
-        '/user/foto/adicionar' => SavePhotoUserController::class,
+        '/user/foto/adicionar' => PhotoUserSaveController::class,
 
     ],
 ];

@@ -11,7 +11,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
-class SavePhotoUserController implements RequestHandlerInterface
+class PhotoUserSaveController implements RequestHandlerInterface
 {
     use ResponseError;
 
