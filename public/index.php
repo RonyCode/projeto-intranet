@@ -8,10 +8,10 @@ use Psr\Http\Server\RequestHandlerInterface;
 require __DIR__ . '/../vendor/autoload.php';
 
 /* REMOVE FOR PRODUCTION!!!*/
-//ini_set('display_errors', 1);
-//ini_set('display_startup_errors', 1);
-//error_reporting(E_ALL);
-//ini_set('html_errors', 1);
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+ini_set('html_errors', 1);
 /* CORS DISABLED!!!*/
 ini_set("allow_url_fopen", true);
 date_default_timezone_set('America/Araguaina');

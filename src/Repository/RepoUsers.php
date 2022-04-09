@@ -23,6 +23,22 @@ class RepoUsers extends GlobalConn implements UserInterface
     {
     }
 
+
+    public function getAllUser(): array
+    {
+        try {
+            $stmt = self::conn()->prepare("SELECT * FROM usuario");
+            $stmt->execute();
+            if ($stmt->rowCount() <= 0) {
+                throw new Exception();
+            }
+            $usuario = self::hidrateUserList($stmt);
+            return ['data' => $usuario, 'status' => 'success', 'code' => 200];
+        } catch (Exception) {
+            $this->responseCatchError("Não foi possível listar todos os usuários");
+        }
+    }
+
     private static function hidrateUserList(PDOStatement $stmt): array
     {
         $user = [];
@@ -36,27 +52,34 @@ class RepoUsers extends GlobalConn implements UserInterface
     #[Pure] private static function newObjUser($data): User
     {
 
-        $birthday = (new ValidateParams())->dateFormatDbToBr($data['NASCIMENTO']);
-        $dateHour = (new ValidateParams())->dateTimeFormatDbToBr($data['DATAHORA']);
-        $date_pass = (new ValidateParams())->dateTimeFormatDbToBr($data['DATASENHA']);
-        $lastAccess = (new ValidateParams())->dateTimeFormatDbToBr($data['ULTIMOACESSO']);
+        $nascimento = (new ValidateParams())->dateFormatDbToBr($data['nascimento']);
+        $dataUser = (new ValidateParams())->dateTimeFormatDbToBr($data['data_user']);
+        $dataExpRg = (new ValidateParams())->dateFormatDbToBr($data['data_exp_rg']);
+        $dataInclusao = (new ValidateParams())->dateFormatDbToBr($data['data_inclusao']);
+        $dataSituacao = (new ValidateParams())->dateFormatDbToBr($data['data_situacao']);
 
         return new User(
-            $data['CODUSUARIO'],
-            $dateHour,
-            $data['NOME'],
-            $data['MATRICULA'],
-            $data['CPF'],
-            $data['SENHA'],
-            $date_pass,
-            $data['RESPSENHA'],
-            $data['TIPO'],
-            $data['SITUACAO'],
-            $birthday,
-            $data['EMAIL'],
-            $lastAccess,
-            $data['CONF'],
-            $data['FOTO']
+            $data['id_user'],
+            $data['nome'],
+            $dataUser,
+            $data['email'],
+            $data['senha'],
+            $data['cpf'],
+            $nascimento,
+            $data["rg"],
+            $data['orgao_exp'],
+            $dataExpRg,
+            $data['local_exp'],
+            $data['naturalidade'],
+            $data['nome_pai'],
+            $data['nome_mae'],
+            $dataInclusao,
+            $data['matricula'],
+            $data['pasep'],
+            $data['reg_nascimento'],
+            $dataSituacao,
+            $data['privilegio'],
+            $data['foto']
         );
     }
 
@@ -65,20 +88,20 @@ class RepoUsers extends GlobalConn implements UserInterface
         try {
             $row = $this->selectUser($user);
 
-            if (!password_verify($user->getPass(), $row["SENHA"])) {
+            if (!password_verify($user->getSenha(), $row["senha"])) {
                 throw new Exception();
             }
 
             $jwt = (new JwtHandler())->jwtEncode(
                 'localhost/api-intranet-proj/public/ by Ronycode',
-                [$row['EMAIL'], $row['CODUSUARIO']]
+                [$row['email'], $row['id_user']]
             );
             return [
-                'id' => $row['CODUSUARIO'],
-                'email' => $row['EMAIL'],
-                'nome' => $row['NOME'],
+                'id' => $row['id_user'],
+                'email' => $row['email'],
+                'nome' => $row['nome'],
                 'token' => $jwt,
-                'photo' => $row['FOTO'],
+                'photo' => $row['foto'],
                 'status' => 'success',
                 'code' => 201,
             ];
@@ -91,7 +114,7 @@ class RepoUsers extends GlobalConn implements UserInterface
     {
         try {
             $stmt = self::conn()->prepare(
-                "SELECT * FROM AUT_USER WHERE CPF = :cpf"
+                "SELECT * FROM usuario WHERE cpf = :cpf"
             );
             $stmt->bindValue(':cpf', $user->getCpf());
             $stmt->execute();
@@ -114,16 +137,16 @@ class RepoUsers extends GlobalConn implements UserInterface
             $stmtHash = $this->selectHashTmp($user);
 
             //VERIFIED TWICE TABLE USER_AUTH AND HASH_TEMP AND HASH SENT FROM EMAIL NO EXPIRED
-            if (password_verify($stmt['EMAIL'], str_replace(" ", "+", $hash))) {
+            if (!password_verify($stmt['email'], str_replace(" ", "+", $hash))) {
                 throw new Exception();
             }
-            if (!password_verify($stmt['EMAIL'], $stmtHash["HASH_TEMP"])) {
+            if (!password_verify($stmt['email'], $stmtHash["hash_temp"])) {
                 throw new Exception();
             }
 
             // ONCE TIME PASSES OF CONSULT, DELETE HASH TO USE ONCE TIME
             $hashOnce = self::conn()->prepare(
-                "UPDATE SENHA_RECOVER_RESPAW SET HASH_TEMP = null WHERE CPF = :cpf"
+                "UPDATE senha_respawn SET hash_temp = null WHERE cpf = :cpf"
             );
             $hashOnce->bindValue(":cpf", $user->getCpf());
             $hashOnce->execute();
@@ -138,7 +161,7 @@ class RepoUsers extends GlobalConn implements UserInterface
         try {
             //CHECKS IF USER EXIST AND CALL THE HASH VALID AND NO EXPIRED
             $this->selectUser($user);
-            $hash_temp = self::conn()->prepare("SELECT * FROM SENHA_RECOVER_RESPAW  WHERE  CPF = :cpf");
+            $hash_temp = self::conn()->prepare("SELECT * FROM senha_respawn  WHERE  cpf = :cpf");
             $hash_temp->bindValue(":cpf", $user->getCpf());
             $hash_temp->execute();
             if ($hash_temp->rowCount() <= 0) {
@@ -156,10 +179,10 @@ class RepoUsers extends GlobalConn implements UserInterface
     {
         try {
             $stmt = self::conn()->prepare(
-                "UPDATE AUT_USER SET SENHA = :pass WHERE CPF = :cpf"
+                "UPDATE usuario SET senha = :pass WHERE cpf = :cpf"
             );
             $stmt->bindValue(":cpf", $user->getCpf());
-            $stmt->bindValue(":pass", password_hash($user->getPass(), PASSWORD_ARGON2I));
+            $stmt->bindValue(":pass", password_hash($user->getSenha(), PASSWORD_ARGON2I));
             $stmt->execute();
             if ($stmt->rowCount() <= 0) {
                 throw new Exception();
@@ -169,10 +192,10 @@ class RepoUsers extends GlobalConn implements UserInterface
                 'data' => $row,
                 'status' => 'success',
                 'code' => 201,
-                "message" => "Usuário verificado e validado!"
+                "message" => "Tudo certo ! nova senha validada."
             ];
         } catch (Exception) {
-            $this->responseCatchError('Senha nova já usada , ou inválida');
+            $this->responseCatchError('Não foi possível concluir a validação da nova senha (hash), tente novamente');
         }
     }
 
@@ -180,15 +203,15 @@ class RepoUsers extends GlobalConn implements UserInterface
     {
 
         try {
-            $userFetch = $this->selectUser($user);
 
+            $userFetch = $this->selectUser($user);
             $stmtUp = self::conn()->prepare(
-                "INSERT INTO  SENHA_RECOVER_RESPAW (NAME_USER, CPF, HASH_TEMP, LAST_DATE_MODIF, DATE_EXPIRES) VALUES(:name, :cpf, :hash_temp, :last_date_modif, :date_expires) "
+                "INSERT INTO  senha_respawn (name_user, cpf, hash_temp, last_date_modif, date_expires) VALUES(:name, :cpf, :hash_temp, :last_date_modif, :date_expires) "
             );
 
-            $stmtUp->bindValue(":name", $userFetch["NOME"]);
+            $stmtUp->bindValue(":name", $userFetch["nome"]);
             $stmtUp->bindValue(":cpf", $user->getCpf());
-            $stmtUp->bindValue(":hash_temp", password_hash($userFetch["EMAIL"], PASSWORD_ARGON2I));
+            $stmtUp->bindValue(":hash_temp", password_hash($userFetch["email"], PASSWORD_ARGON2I));
             $stmtUp->bindValue(":last_date_modif", date('Y-m-d H:i:s'));
             //HASH TEMP EXPIRES AFTER 24 HOURS CHECK THE FOLDER CONFIG , AND EVENT MYSQL ON CONFIG.PHP
             $stmtUp->bindValue(":date_expires", date('Y-m-d H:i:s', (strtotime('+ 24 hour'))));
@@ -196,19 +219,19 @@ class RepoUsers extends GlobalConn implements UserInterface
             if ($stmtUp->rowCount() <= 0) {
 
                 throw  new Exception();
+            } else {
+
+                $rowHash = $this->selectHashTmp($user);
+                $mail = (new EmailForClient())
+                    ->add(
+                        SUBJET_MAIL,
+                        $this->bodyEmail(["user" => $userFetch["email"],
+                            "hash" => $rowHash["hash_temp"]]),
+                        $userFetch['email'],
+                        FROM_NAME_MAIL
+                    )
+                    ->send();
             }
-
-            $rowHash = $this->selectHashTmp($user);
-            $mail = (new EmailForClient())
-                ->add(
-                    SUBJET_MAIL,
-                    $this->bodyEmail(["user" => $userFetch["EMAIL"],
-                        "hash" => $rowHash["HASH_TEMP"]]),
-                    $userFetch['EMAIL'],
-                    FROM_NAME_MAIL
-                )
-                ->send();
-
             return [
                 'data' => $mail,
                 'status' => 'success',
@@ -225,18 +248,15 @@ class RepoUsers extends GlobalConn implements UserInterface
     public function addUser(User $user): array
     {
         try {
-
 //            CONFIG FIELDS CPF AND EMAIL UNIQUE REGISTER FOR NO ERRORS!!! SEE FOLDER CONFIG FILE CONFIG.PHP
             $stmt = self::conn()->prepare(
-                "INSERT INTO AUT_USER (MATRICULA,CPF, NASCIMENTO,EMAIL,SENHA) VALUES(:matricula, :cpf, :dataNasc, :email, :pass)"
-            );
-            $stmt->bindValue(':matricula', $user->getRegistration());
+                "INSERT INTO intranet_api.usuario (matricula,cpf, nascimento,email,senha) VALUES (:matricula, :cpf, :dataNasc, :email, :senha);");
+            $stmt->bindValue(':matricula', $user->getMatricula());
             $stmt->bindValue(':cpf', $user->getCpf());
-            $stmt->bindValue(':dataNasc', $user->getBirthday());
+            $stmt->bindValue(':dataNasc', $user->getNascimento());
             $stmt->bindValue(':email', $user->getEmail());
-            $stmt->bindValue(':pass', password_hash($user->getPass(), PASSWORD_ARGON2I));
+            $stmt->bindValue(':senha', password_hash($user->getSenha(), PASSWORD_ARGON2I));
             $stmt->execute();
-
             if ($stmt->rowCount() <= 0) {
                 throw new Exception();
             }
@@ -248,7 +268,7 @@ class RepoUsers extends GlobalConn implements UserInterface
             ];
         } catch (Exception) {
             $this->responseCatchError(
-                'Usuário já cadastrado ou não pode ser cadastrado com este CPF, tente novamente.'
+                'Usuário não pode ter o mesmo CPF, MATRICULA, ou EMAIL confira os posts enviados tente novamente.'
             );
         }
     }

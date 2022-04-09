@@ -39,11 +39,11 @@ class ValidateParams
     public function dateFormatDbToBr($objDate): ?string
     {
         try {
-            $date = DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $objDate);
+            $date = DateTimeImmutable::createFromFormat('Y-m-d', $objDate);
             if (!$date) {
                 throw new Exception();
             } else {
-                return $date->format('d/m/Y H:i:s');
+                return $date->format('d/m/Y');
             }
         } catch (Exception) {
             $this->responseCatchError(
@@ -66,7 +66,7 @@ class ValidateParams
             }
         } catch (Exception) {
             $this->responseCatchError(
-                "Os dados referente a data dever ser exatamente assim XXXX-XX-XX vindo do banco de dados."
+                "Os dados referente a data dever ser exatamente assim com horário XXXX-XX-XX HH:mm:ss vindo do banco de dados."
             );
         }
     }
@@ -252,7 +252,7 @@ class ValidateParams
                 return $date->format("Y-m-d H:i:s");
             }
         } catch (Exception) {
-            $this->responseCatchError('"Os dados referente a data dever ser exatamente neste formato XX/XX/XXXX.');
+            $this->responseCatchError('"Os dados referente a data dever ser exatamente neste formato com o horário XX/XX/XXXX HH:mm:ss.');
         }
     }
 

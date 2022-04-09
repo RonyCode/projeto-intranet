@@ -3,21 +3,21 @@
 //CONFIG OF DATABASE LOCAL
 const DBDRIVE = 'mysql';
 const DBHOST = 'localhost';
-const DBNAME = 'intranet';
+const DBNAME = 'intranet_api';
 const DBUSER = 'root';
 const DBPASS = '170286P@ra';
 
 //CONFIG OF DATABASE INTRANET
 const DBDRIVE_INTRANET = 'mysql';
 const DBHOST_INTRANET = 'localhost';
-const DBNAME_INTRANET = 'intranet';
+const DBNAME_INTRANET = 'intranet_api';
 const DBUSER_INTRANET = 'root';
 const DBPASS_INTRANET = '170286P@ra';
 
 //CONFIG OF DATABASE INTRANET-HOMOLOGAÇÃO
 const DBDRIVE_HOMOLOGACAO = 'mysql';
 const DBHOST_HOMOLOGACAO = 'localhost';
-const DBNAME_HOMOLOGACAO = 'intranet';
+const DBNAME_HOMOLOGACAO = 'intranet_api';
 const DBUSER_HOMOLOGACAO = 'root';
 const DBPASS_HOMOLOGACAO = '170286P@ra';
 
@@ -30,7 +30,7 @@ const DBPASS_HOMOLOGACAO = '170286P@ra';
 //    30 SECOND
 //ON COMPLETION PRESERVE
 //DO
-//UPDATE SENHA_RECOVER_RESPAW SET HASH_TEMP = NULL WHERE DATE_EXPIRES < NOW();
+//UPDATE intranet_api.senha_respawn SET hash_temp = NULL WHERE date_expires < NOW();
 
 //########################################################################################
 //CONFIG FIELDS UNIQUE REGISTER
@@ -43,14 +43,14 @@ const DBPASS_HOMOLOGACAO = '170286P@ra';
 //########################################################################################
 //CONFIG OF EVENT TO DELETE REPEATED DATA
 //########################################################################################
-//ALTER EVENT
-//    EXCLUI_DADOS_REPETIDOS
+//CREATE EVENT
+//   EXCLUI_DADOS_REPETIDOS
 //ON SCHEDULE EVERY
 //    5 second
 //ON COMPLETION PRESERVE
 //DO
-//    DELETE id_old FROM intranet.SENHA_RECOVER_RESPAW AS id_old,
-//                   intranet.SENHA_RECOVER_RESPAW AS id_new WHERE id_old.id < id_new.id;
+//    DELETE id_old FROM intranet_api.senha_respawn AS id_old,
+//                 intranet_api.senha_respawn AS id_new WHERE id_old.id < id_new.id;
 //########################################################################################
 
 

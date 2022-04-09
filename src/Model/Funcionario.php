@@ -9,45 +9,41 @@ use Api\Helper\ValidateParams;
 class Funcionario
 {
     public function __construct(
-        private ?int $codFuncionario,
-        private ?string $matricula,
-        private ?string $novaMatricula,
-        private ?string $vinculo,
-        private ?string $rg,
-        private ?string $orgaoEmissor,
-        private ?string $dataInclusao,
-        private ?string $nome,
-        private ?string $nomeGuerra,
-        private ?string $postoGraduacao,
-        private ?int $codPostoGraduacaoQuadros,
-        private ?string $nomePai,
-        private ?string $nomeMae,
-        private ?string $ts,
-        private ?string $fRH,
-        private ?string $naturalidade,
-        private ?string $ufNaturalidade,
-        private ?string $fd1,
-        private ?string $fd2,
-        private ?string $dataNascimento,
-        private ?string $cpf,
-        private ?string $pasep,
-        private ?string $regNascimento,
-        private ?string $localExpedicao,
-        private ?string $dataExpedicao,
-        private ?string $tipo,
-        private ?string $situacao,
+        private ?int $idFunc,
+//        private ?string $matricula,
+//        private ?string $rg,
+//        private ?string $dataInclusao,
+//        private ?string $nome,
+//        private ?string $nomeGuerra,
+//        private ?string $postoGraduacao,
+//        private ?string $nomePai,
+//        private ?string $nomeMae,
+//        private ?string $ts,
+//        private ?string $naturalidade,
+//        private ?string $dataNascimento,
+//        private ?string $cpf,
+//        private ?string $pasep,
+//        private ?string $regNascimento,
+//        private ?string $localExpedicao,
+//        private ?string $dataExpedicao,
+//        private ?string $tipo,
+//        private ?string $situacao,
         private ?string $foto,
         private ?string $dataSituacao,
+        private ?string $lotacao,
+
     )
     {
     }
+
+
 
     /**
      * @return int|null
      */
     public function getCodFuncionario(): ?int
     {
-        return (new ValidateParams())->validateInteger($this->codFuncionario);
+        return (new ValidateParams())->validateInteger($this->);
     }
 
     /**
@@ -280,6 +276,29 @@ class Funcionario
     public function dataSerialize(): array
     {
         return get_object_vars($this);
+    }
+    /**
+     * @return string|null
+     */
+    public function getLotacao(): ?string
+    {
+        return $this->lotacao;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getPrivileios(): ?string
+    {
+        return $this->privileios;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getFuncao(): ?string
+    {
+        return $this->funcao;
     }
 
 }

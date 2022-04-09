@@ -11,7 +11,7 @@ use Nyholm\Psr7\Response;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
-class SaveStdController implements RequestHandlerInterface
+class FuncionarioSaveController implements RequestHandlerInterface
 {
     use ResponseError;
 

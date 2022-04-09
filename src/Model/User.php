@@ -6,106 +6,56 @@ use Api\Helper\ValidateParams;
 
 class User
 {
+
+
     public function __construct(
         private ?int $idUser,
-        private ?string $dateHour,
-        private ?string $name,
-        private ?string $registration,
-        private ?string $cpf,
-        private ?string $pass,
-        private ?string $datePass,
-        private ?string $passAwnser,
-        private ?string $type,
-        private ?string $situation,
-        private ?string $birthday,
+        private ?string $nome,
+        private ?string $dataUser,
         private ?string $email,
-        private ?string $lastAccess,
-        private ?int $conf,
-        private ?string $photo,
+        private ?string $senha,
+        private ?string $cpf,
+        private ?string $nascimento,
+        private ?string $rg,
+        private ?string $orgaoExp,
+        private ?string $dataExp,
+        private ?string $localExp,
+        private ?string $naturalidade,
+        private ?string $nomePai,
+        private ?string $nomeMae,
+        private ?string $dataInclusao,
+        private ?string $matricula,
+        private ?string $pasep,
+        private ?string $regNascimento,
+        private ?string $dataSituacao,
+        private ?string $privilegio,
+        private ?string $foto
     )
     {
     }
 
     /**
-     * @return string|null
+     * @return int|null
      */
-    public function getDateHour(): ?string
+    public function getIdUser(): ?int
     {
-        return (new ValidateParams())->dateTimeFormatBrToDb($this->dateHour);
+        return $this->idUser;
     }
 
     /**
      * @return string|null
      */
-    public function getName(): ?string
+    public function getNome(): ?string
     {
-        return (new ValidateParams())->validateName($this->name);
+        return (new ValidateParams())->validateName($this->nome);
     }
 
     /**
      * @return string|null
      */
-    public function getRegistration(): ?string
+    public function getDataUser(): ?string
     {
-        return $this->registration;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getCpf(): ?string
-    {
-        return (new ValidateParams())->validateCpf($this->cpf);
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getPass(): ?string
-    {
-        return $this->pass;
-        // IF WANT, UNCOMMENT THIS FOR USE THE REGEX THAT VALIDATES PASSWORD WITH 8 CHARACTERS WITH AT LEAST 1 LETTER
-//        return (new ValidateParams())->validatePass($this->pass);
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getDatePass(): ?string
-    {
-        return (new ValidateParams())->dateTimeFormatBrToDb($this->datePass);
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getPassAwnser(): ?string
-    {
-        return $this->passAwnser;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getType(): ?string
-    {
-        return $this->type;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getSituation(): ?string
-    {
-        return $this->situation;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getBirthday(): ?string
-    {
-        return (new ValidateParams())->validateBirthday($this->birthday);
+        return (new ValidateParams())->dateTimeFormatBrToDb($this->dataUser);
     }
 
     /**
@@ -119,37 +69,144 @@ class User
     /**
      * @return string|null
      */
-    public function getLastAccess(): ?string
+    public function getSenha(): ?string
     {
-        return (new ValidateParams())->dateTimeFormatBrToDb($this->lastAccess);
-    }
-
-    /**
-     * @return int|null
-     */
-    public function getConf(): ?int
-    {
-        return $this->conf;
+        return $this->senha;
+        // IF WANT, UNCOMMENT THIS FOR USE THE REGEX THAT VALIDATES PASSWORD WITH 8 CHARACTERS WITH AT LEAST 1 LETTER
+//        return (new ValidateParams())->validatePass($this->pass);
     }
 
     /**
      * @return string|null
      */
-    public function getPhoto(): ?string
+    public function getCpf(): ?string
     {
-        return $this->photo;
+        return (new ValidateParams())->validateCpf($this->cpf);
     }
 
     /**
-     * @return int|null
+     * @return string|null
      */
-    public function getIdUser(): ?int
+    public function getNascimento(): ?string
     {
-        return $this->idUser;
+        return (new ValidateParams())->validateBirthday($this->nascimento);
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getRg(): ?string
+    {
+        return $this->rg;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getOrgaoExp(): ?string
+    {
+        return $this->orgaoExp;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getDataExp(): ?string
+    {
+        return (new ValidateParams())->dateFormatBrToDb($this->dataExp);
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getLocalExp(): ?string
+    {
+        return $this->localExp;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getNaturalidade(): ?string
+    {
+        return $this->naturalidade;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getNomePai(): ?string
+    {
+        return $this->nomePai;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getNomeMae(): ?string
+    {
+        return $this->nomeMae;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getDataInclusao(): ?string
+    {
+        return (new ValidateParams())->dateFormatBrToDb($this->dataInclusao);
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getMatricula(): ?string
+    {
+        return $this->matricula;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getPasep(): ?string
+    {
+        return $this->pasep;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getRegNascimento(): ?string
+    {
+        return $this->regNascimento;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getDataSituacao(): ?string
+    {
+        return (new ValidateParams())->dateFormatBrToDb($this->dataSituacao);
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getPrivilegio(): ?string
+    {
+        return $this->privilegio;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getFoto(): ?string
+    {
+        return $this->foto;
     }
 
     public function dataSerialize(): array
     {
         return get_object_vars($this);
     }
+
 }

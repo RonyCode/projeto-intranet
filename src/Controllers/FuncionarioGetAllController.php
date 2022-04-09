@@ -11,7 +11,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
-class GetAllFuncionarioController implements RequestHandlerInterface
+class FuncionarioGetAllController implements RequestHandlerInterface
 {
     use ResponseError;
 
