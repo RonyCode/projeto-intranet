@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="intranet@localhost" uuid="2797da64-1f02-4493-9a09-9f90ec8564fd">
+    <data-source source="LOCAL" name="intranet_api@localhost" uuid="2797da64-1f02-4493-9a09-9f90ec8564fd">
       <driver-ref>mysql.8</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
-      <jdbc-url>jdbc:mysql://localhost:3306/intranet</jdbc-url>
+      <jdbc-url>jdbc:mysql://localhost:3306/intranet_api</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
   </component>

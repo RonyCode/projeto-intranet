@@ -9,7 +9,7 @@ use Api\Helper\ValidateParams;
 use Api\Infra\EmailForClient;
 use Api\Infra\GlobalConn;
 use Api\Interface\UserInterface;
-use Api\Model\User;
+use Api\Model\Usuario;
 use Exception;
 use JetBrains\PhpStorm\Pure;
 use PDOStatement;
@@ -49,7 +49,7 @@ class RepoUsers extends GlobalConn implements UserInterface
         return $user;
     }
 
-    #[Pure] private static function newObjUser($data): User
+    #[Pure] private static function newObjUser($data): Usuario
     {
         $nascimento = (new ValidateParams())->dateFormatDbToBr($data['nascimento']);
         $dataUser = (new ValidateParams())->dateTimeFormatDbToBr($data['data_user']);
@@ -57,7 +57,7 @@ class RepoUsers extends GlobalConn implements UserInterface
         $dataInclusao = (new ValidateParams())->dateFormatDbToBr($data['data_inclusao']);
         $dataSituacao = (new ValidateParams())->dateFormatDbToBr($data['data_situacao']);
 
-        return new User(
+        return new Usuario(
             $data['id_user'],
             $data['nome'],
             $dataUser,
@@ -77,12 +77,13 @@ class RepoUsers extends GlobalConn implements UserInterface
             $data['pasep'],
             $data['reg_nascimento'],
             $dataSituacao,
-            $data['privilegio'],
-            $data['foto']
+            $data['id_foto'],
+            $data['id_militar'],
+            $data['id_senha_respawn']
         );
     }
 
-    public function userAuthToken(User $user): array
+    public function userAuthToken(Usuario $user): array
     {
         try {
             $row = $this->selectUser($user);
@@ -98,7 +99,7 @@ class RepoUsers extends GlobalConn implements UserInterface
                 'email' => $row['email'],
                 'nome' => $row['nome'],
                 'token' => $jwt,
-                'photo' => $row['foto'],
+                'id_photo' => $row['id_foto'],
                 'status' => 'success',
                 'code' => 201,
             ];
@@ -107,13 +108,14 @@ class RepoUsers extends GlobalConn implements UserInterface
         }
     }
 
-    public function selectUser(User $user): array
+    public function selectUser(Usuario $user): array
     {
         try {
             $stmt = self::conn()->prepare(
-                "SELECT * FROM usuario WHERE cpf = :cpf"
+                "SELECT * FROM usuario WHERE cpf = :cpf OR id_user = :idUser"
             );
             $stmt->bindValue(':cpf', $user->getCpf());
+            $stmt->bindValue(':idUser', $user->getIdUser());
             $stmt->execute();
             if ($stmt->rowCount() <= 0) {
                 throw new Exception();
@@ -127,7 +129,7 @@ class RepoUsers extends GlobalConn implements UserInterface
         }
     }
 
-    public function checkHashEmail(User $user, $hash): array
+    public function checkHashEmail(Usuario $user, $hash): array
     {
         try {
             $stmt = $this->selectUser($user);
@@ -152,7 +154,7 @@ class RepoUsers extends GlobalConn implements UserInterface
         }
     }
 
-    public function selectHashTmp(User $user): array
+    public function selectHashTmp(Usuario $user): array
     {
         try {
             //CHECKS IF USER EXIST AND CALL THE HASH VALID AND NO EXPIRED
@@ -171,7 +173,7 @@ class RepoUsers extends GlobalConn implements UserInterface
         }
     }
 
-    private function resetPass(User $user): array
+    private function resetPass(Usuario $user): array
     {
         try {
             $stmt = self::conn()->prepare(
@@ -195,7 +197,7 @@ class RepoUsers extends GlobalConn implements UserInterface
         }
     }
 
-    public function recoverPass(User $user): array
+    public function recoverPass(Usuario $user): array
     {
 
         try {
@@ -212,10 +214,8 @@ class RepoUsers extends GlobalConn implements UserInterface
             $stmtUp->bindValue(":date_expires", date('Y-m-d H:i:s', (strtotime('+ 24 hour'))));
             $stmtUp->execute();
             if ($stmtUp->rowCount() <= 0) {
-
                 throw  new Exception();
             } else {
-
                 $rowHash = $this->selectHashTmp($user);
                 $mail = (new EmailForClient())
                     ->add(
@@ -239,12 +239,12 @@ class RepoUsers extends GlobalConn implements UserInterface
         }
     }
 
-    public function addUser(User $user): array
+    public function addUser(Usuario $user): array
     {
         try {
 //            CONFIG FIELDS CPF AND EMAIL UNIQUE REGISTER FOR NO ERRORS!!! SEE FOLDER CONFIG FILE CONFIG.PHP
             $stmt = self::conn()->prepare(
-                "INSERT INTO intranet_api.usuario (matricula,cpf, nascimento,email,senha) VALUES (:matricula, :cpf, :dataNasc, :email, :senha);");
+                "INSERT INTO usuario (matricula,cpf, nascimento,email,senha) VALUES (:matricula, :cpf, :dataNasc, :email, :senha);");
             $stmt->bindValue(':matricula', $user->getMatricula());
             $stmt->bindValue(':cpf', $user->getCpf());
             $stmt->bindValue(':dataNasc', $user->getNascimento());

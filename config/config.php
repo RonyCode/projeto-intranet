@@ -75,3 +75,5 @@ const    ALT_BODY = 'Email solicitação recuperação de senha.Caso o remetente
 //DIRETORY IMAGES
 
 define("DIR_IMG", $_SERVER['DOCUMENT_ROOT'] . '/api-intranet-proj/uploads/');
+const URL_IMG = 'http://localhost/api-intranet/uploads/';
+

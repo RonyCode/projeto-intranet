@@ -4,7 +4,7 @@ namespace Api\Model;
 
 use Api\Helper\ValidateParams;
 
-class User
+class Usuario
 {
 
 
@@ -28,8 +28,9 @@ class User
         private ?string $pasep,
         private ?string $regNascimento,
         private ?string $dataSituacao,
-        private ?string $privilegio,
-        private ?string $foto
+        private ?int $idFoto,
+        private ?int $idMilitar,
+        private ?int $idSenhaRespawn,
     )
     {
     }
@@ -47,7 +48,7 @@ class User
      */
     public function getNome(): ?string
     {
-        return (new ValidateParams())->validateName($this->nome);
+        return (new ValidateParams())->validateStringComAcento($this->nome);
     }
 
     /**
@@ -191,17 +192,26 @@ class User
     /**
      * @return string|null
      */
-    public function getPrivilegio(): ?string
+    public function getIdFoto(): ?int
     {
-        return $this->privilegio;
+        return (new ValidateParams())->validateInteger($this->idFoto);
+
     }
 
     /**
      * @return string|null
      */
-    public function getFoto(): ?string
+    public function getIdMilitar(): ?int
     {
-        return $this->foto;
+        return (new ValidateParams())->validateInteger($this->idMilitar);
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getIdSenhaRespawn(): ?int
+    {
+        return (new ValidateParams())->validateInteger($this->idSenhaRespawn);
     }
 
     public function dataSerialize(): array

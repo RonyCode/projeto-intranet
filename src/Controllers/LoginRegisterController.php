@@ -3,7 +3,7 @@
 namespace Api\Controllers;
 
 use Api\Helper\ResponseError;
-use Api\Model\User;
+use Api\Model\Usuario;
 use Api\Repository\RepoUsers;
 use Exception;
 use Nyholm\Psr7\Response;
@@ -22,6 +22,7 @@ class LoginRegisterController implements RequestHandlerInterface
                 throw new Exception();
             }
             $register = filter_var($request->getParsedBody()['matricula'], FILTER_SANITIZE_STRING);
+
             $cpf = filter_var($request->getParsedBody()['cpf'], FILTER_SANITIZE_STRING);
             $birthday = filter_var($request->getParsedBody()['nascimento'], FILTER_SANITIZE_STRING);
             $email = filter_var($request->getParsedBody()['email'], FILTER_VALIDATE_EMAIL);
@@ -32,15 +33,15 @@ class LoginRegisterController implements RequestHandlerInterface
             }
 
 
-            $user = new User(
+            $user = new Usuario(
                 null, null, null,
                 $email, $pass, $cpf, $birthday,
                 null, null, null, null,
                 null, null, null,
                 null, $register, null,
-                null, null, null,null
+                null, null, null,null,null
             );
-
+            var_dump($user);
             $response = (new RepoUsers())->addUser($user);
             return new Response(200, [], json_encode($response, JSON_UNESCAPED_UNICODE));
         } catch (Exception) {

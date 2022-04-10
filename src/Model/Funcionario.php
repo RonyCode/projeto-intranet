@@ -67,7 +67,7 @@ class Funcionario
      */
     public function getVinculo(): ?string
     {
-        return (new ValidateParams())->validateName($this->vinculo);
+        return (new ValidateParams())->validateStringComAcento($this->vinculo);
     }
 
     /**
@@ -99,7 +99,7 @@ class Funcionario
      */
     public function getNome(): ?string
     {
-        return (new ValidateParams())->validateName($this->nome);
+        return (new ValidateParams())->validateStringComAcento($this->nome);
     }
 
     /**
@@ -107,7 +107,7 @@ class Funcionario
      */
     public function getNomeGuerra(): ?string
     {
-        return (new ValidateParams())->validateName($this->nomeGuerra);
+        return (new ValidateParams())->validateStringComAcento($this->nomeGuerra);
     }
 
     /**
@@ -131,7 +131,7 @@ class Funcionario
      */
     public function getNomePai(): ?string
     {
-        return (new ValidateParams())->validateName($this->nomePai);
+        return (new ValidateParams())->validateStringComAcento($this->nomePai);
     }
 
     /**
@@ -139,7 +139,7 @@ class Funcionario
      */
     public function getNomeMae(): ?string
     {
-        return (new ValidateParams())->validateName($this->nomeMae);
+        return (new ValidateParams())->validateStringComAcento($this->nomeMae);
     }
 
     /**
@@ -163,7 +163,7 @@ class Funcionario
      */
     public function getNaturalidade(): ?string
     {
-        return (new ValidateParams())->validateName($this->naturalidade);
+        return (new ValidateParams())->validateStringComAcento($this->naturalidade);
     }
 
     /**

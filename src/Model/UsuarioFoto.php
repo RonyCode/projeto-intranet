@@ -2,8 +2,9 @@
 
 namespace Api\Model;
 
-class Image
+class UsuarioFoto
 {
+    private ?string $photoId;
     private ?string $photoName;
     private ?string $photoNameRandomized;
     private ?string $photoSrc;
@@ -14,7 +15,7 @@ class Image
 
     public function __construct(
         private ?array $photoPost,
-        private ?string $photoId,
+        private ?string $idUser,
         private ?int $photoCustomWidth,
         private ?int $photoCustomHeight
     ) {
@@ -54,6 +55,10 @@ class Image
         return '';
     }
 
+    public function getPhotoId(): ?int
+    {
+        return $this->photoId;
+    }
     public function getPhotoTmpName(): ?string
     {
         return $this->photoTmpName;
@@ -104,7 +109,7 @@ class Image
     public function getPhotoSrc(): ?string
     {
         $array = explode('/', $this->photoSrc);
-        return 'http://localhost/api-ronycode/uploads/' . $this->getPhotoId() . '/' . end($array);
+        return URL_IMG . $this->getIdUser() . '/' . end($array);
     }
 
     public function setPhotoSrc(?string $photoSrc): void
@@ -112,9 +117,9 @@ class Image
         $this->photoSrc = $photoSrc;
     }
 
-    public function getPhotoId(): ?string
+    public function getIdUser(): ?string
     {
-        return $this->photoId;
+        return $this->idUser;
     }
 
     public function getPhotoNameRandomized(): ?string

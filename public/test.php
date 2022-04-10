@@ -4,7 +4,7 @@
 //Load Composer's autoloader
 
 use Api\Infra\GlobalConn;
-use Api\Model\User;
+use Api\Model\Usuario;
 
 require '../vendor/autoload.php';
 //
@@ -15,18 +15,15 @@ $conn = GlobalConn::conn();
 
 
 
-$user = new User(
-    null, null, "17/02/1986",
+$user = new Usuario(
+    7, null, "17/02/1986",
     null, null, null, "17/02/1986",
     null, null, "17/02/1846", null,
     null, null, null,
     "11/11/1364", null, null,
-    null, "17/02/1500", null,null
+    null, "17/02/1500", null,null,null
 );
 
+$id = $user->getIdUser();
+var_dump((new \Api\Repository\RepoUsers())->selectUser($user));
 
-var_dump( (new \Api\Helper\ValidateParams())->dateTimeFormatDbToBr("1988-01-01 22:00:00"));
-var_dump( (new \Api\Helper\ValidateParams())->dateFormatDbToBr("1988-01-01"));
-var_dump( (new \Api\Helper\ValidateParams())->dateFormatDbToBr("1988-01-01"));
-var_dump( (new \Api\Helper\ValidateParams())->dateFormatDbToBr("1988-01-01"));
-var_dump( (new \Api\Helper\ValidateParams())->dateFormatDbToBr("1988-01-01"));

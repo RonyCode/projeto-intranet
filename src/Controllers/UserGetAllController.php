@@ -5,7 +5,7 @@ namespace Api\Controllers;
 
 
 use Api\Helper\ResponseError;
-use Api\Model\User;
+use Api\Model\Usuario;
 use Api\Repository\RepoUsers;
 use Exception;
 use Nyholm\Psr7\Response;

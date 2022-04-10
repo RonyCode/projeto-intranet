@@ -1,12 +1,12 @@
 <?php
 
 use Api\Infra\GlobalConn;
-use Api\Model\User;
+use Api\Model\Usuario;
 
 require __DIR__ . "/../src/Model/Student.php";
 require __DIR__ . "/../vendor/autoload.php";
 
-$use = new User(null, 'RONY ANDERSON', null, null, null);
+$use = new Usuario(null, 'RONY ANDERSON', null, null, null);
 
 $idStudent = $_POST["id_student"];
 $student = $_POST["name"];

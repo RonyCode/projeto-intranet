@@ -3,7 +3,7 @@
 namespace Api\Infra;
 
 use Api\Helper\ResponseError;
-use Api\Model\Image;
+use Api\Model\UsuarioFoto;
 use Exception;
 
 class UploadImages
@@ -14,7 +14,7 @@ class UploadImages
     {
     }
 
-    public function saveImgResized(Image $image, bool $randomNames): Image
+    public function saveImgResized(UsuarioFoto $image, bool $randomNames): UsuarioFoto
     {
 
         try {
@@ -65,14 +65,14 @@ class UploadImages
         }
     }
 
-    private function dirToImageFromUpload(Image $image, $randomNames): string
+    private function dirToImageFromUpload(UsuarioFoto $image, $randomNames): string
     {
         try {
-            if (!is_dir($image->getPhotoDir() . $image->getPhotoId())) {
-                mkdir($image->getPhotoDir() . $image->getPhotoId(), 0777);
+            if (!is_dir($image->getPhotoDir() . $image->getIdUser())) {
+                mkdir($image->getPhotoDir() . $image->getIdUser(), 0777);
             }
             $nameUploaded = $image->getPhotoDir()
-                . $image->getPhotoId() . '/'
+                . $image->getIdUser() . '/'
                 . $this->randomizerNames($randomNames)
                 . $this->tirarAcento($image->getPhotoName())
                 . $image->getPhotoExtension();
@@ -113,7 +113,7 @@ class UploadImages
         return str_replace($com_pontuacao, $sem_pontuacao, $final);
     }
 
-    public function getNameImg(Image $image, $randomNames)
+    public function getNameImg(UsuarioFoto $image, $randomNames)
     {
         return $this->randomizerNames($randomNames)
             . $this->tirarAcento($image->getPhotoName())

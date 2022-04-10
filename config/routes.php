@@ -11,7 +11,7 @@ use Api\Controllers\UserSelectedController;
 use Api\Controllers\LoginRecoverPassController;
 use Api\Controllers\LoginRegisterController;
 use Api\Controllers\LoginResetPassController;
-use Api\Controllers\PhotoUserSaveController;
+use Api\Controllers\UserPhotoSaveController;
 use Api\Controllers\SaveStdController;
 use Api\Controllers\SelectStdController;
 use Api\Infra\Router;
@@ -26,13 +26,11 @@ $arrayRotas = [
         '/error' => ErrorController::class
     ],
     $routesProtected => [
-        '/funcionarios' => FuncionarioGetAllController::class,
+//        '/militares' => FuncionarioGetAllController::class,
         '/usuarios' => UserGetAllController::class,
-        '/user/id/' . $id => SelectStdController::class,
-        '/user/salvar' => SaveStdController::class,
-        '/aluno/deletar' => DeleteStdController::class,
-        '/user' => UserSelectedController::class,
-        '/user/foto/adicionar' => PhotoUserSaveController::class,
+        '/usuario/id/' . $id => UserSelectedController::class,
+        '/usuario/foto/adicionar' => UserPhotoSaveController::class,
+        '/usuario/foto/deletar' => UserPhotoSaveController::class,
 
     ],
 ];

@@ -96,7 +96,7 @@ class ValidateParams
         }
     }
 
-    public function validateName(string $name): ?string
+    public function validateStringComAcento(string $name): ?string
     {
         try {
             $regex = "/^[A-Za-záàâãéèêíïóôõöúçñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ ]+$/";
@@ -107,7 +107,7 @@ class ValidateParams
             return $name;
         } catch (Exception) {
             $this->responseCatchError(
-                "Digite apenas letras no campo nome, números ou caracteres especiais não serão aceitos."
+                "Digite apenas letras neste campo com ou sem acentos, números ou caracteres especiais não serão aceitos."
             );
         }
     }
@@ -123,7 +123,7 @@ class ValidateParams
             return $sigla;
         } catch (Exception) {
             $this->responseCatchError(
-                "Tipo sanguíneo inválido o campo dever seguir exatamente esta máscara X ou XX!"
+                "Este campo dever seguir exatamente esta máscara X ou XX!"
             );
         }
     }

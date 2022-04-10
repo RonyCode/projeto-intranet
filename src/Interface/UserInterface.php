@@ -2,20 +2,20 @@
 
 namespace Api\Interface;
 
-use Api\Model\User;
+use Api\Model\Usuario;
 
 interface UserInterface
 {
-    public function userAuthToken(User $user): array;
+    public function userAuthToken(Usuario $user): array;
 
-    public function selectUser(User $user): array;
+    public function selectUser(Usuario $user): array;
 
-    public function checkHashEmail(User $user, $hash): array;
+    public function checkHashEmail(Usuario $user, $hash): array;
 
-    public function selectHashTmp(User $user): array;
+    public function selectHashTmp(Usuario $user): array;
 
-    public function recoverPass(User $user): array;
+    public function recoverPass(Usuario $user): array;
 
-    public function addUser(User $user): array;
+    public function addUser(Usuario $user): array;
 
 }
