@@ -5,7 +5,6 @@ namespace Api\Infra;
 use Api\Helper\ResponseError;
 use PDO;
 
-
 class GlobalConn
 {
     use ResponseError;
@@ -17,10 +16,8 @@ class GlobalConn
             $con->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
             $con->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             return $con;
-
         } catch (\Exception) {
-           return responseCatchError("Não foi possivel conectar ao banco de dados");
+            self::responseCatchError("Não foi possivel conectar ao banco de dados");
         }
-
     }
 }

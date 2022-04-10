@@ -2,18 +2,16 @@
 
 namespace config\routes;
 
-use Api\Controllers\LoginController;
-use Api\Controllers\DeleteStdController;
 use Api\Controllers\ErrorController;
-use Api\Controllers\FuncionarioGetAllController;
-use Api\Controllers\UserGetAllController;
-use Api\Controllers\UserSelectedController;
+use Api\Controllers\LoginController;
 use Api\Controllers\LoginRecoverPassController;
 use Api\Controllers\LoginRegisterController;
 use Api\Controllers\LoginResetPassController;
+use Api\Controllers\MilitarGetAllController;
+use Api\Controllers\MilitarSaveController;
+use Api\Controllers\UserGetAllController;
 use Api\Controllers\UserPhotoSaveController;
-use Api\Controllers\SaveStdController;
-use Api\Controllers\SelectStdController;
+use Api\Controllers\UserSelectedController;
 use Api\Infra\Router;
 
 $routesProtected = 'Protected';
@@ -26,11 +24,11 @@ $arrayRotas = [
         '/error' => ErrorController::class
     ],
     $routesProtected => [
-//        '/militares' => FuncionarioGetAllController::class,
+        '/militares' => MilitarGetAllController::class,
+        '/militar/salvar' => MilitarSaveController::class,
         '/usuarios' => UserGetAllController::class,
-        '/usuario/id/' . $id => UserSelectedController::class,
-        '/usuario/foto/adicionar' => UserPhotoSaveController::class,
-        '/usuario/foto/deletar' => UserPhotoSaveController::class,
+        '/usuario/id' => UserSelectedController::class,
+        '/usuario/foto/salvar' => UserPhotoSaveController::class,
 
     ],
 ];

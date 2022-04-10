@@ -8,7 +8,7 @@ interface UserInterface
 {
     public function userAuthToken(Usuario $user): array;
 
-    public function selectUser(Usuario $user): array;
+    public function selectUserByIdUser(Usuario $user): array;
 
     public function checkHashEmail(Usuario $user, $hash): array;
 

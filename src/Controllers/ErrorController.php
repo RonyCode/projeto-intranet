@@ -11,6 +11,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 class ErrorController implements RequestHandlerInterface
 {
     use ResponseError;
+
     public function __construct()
     {
     }

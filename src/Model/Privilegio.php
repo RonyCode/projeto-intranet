@@ -11,14 +11,11 @@ class Privilegio
     public function __construct(
 
         private ?int $idPriv,
-        private ?int $idUser,
         private ?string $superPriv,
         private ?string $servico,
         private ?string $subServico,
         private ?string $dataConcessao,
         private ?string $respConcessao,
-        private ?string $lotacao,
-        private ?string $funcao
     )
     {
     }
@@ -31,13 +28,6 @@ class Privilegio
         return (new ValidateParams())->validateInteger($this->idPriv);
     }
 
-    /**
-     * @return int|null
-     */
-    public function getIdUser(): ?int
-    {
-        return (new ValidateParams())->validateInteger($this->idUser);
-    }
 
     /**
      * @return string|null
@@ -77,22 +67,6 @@ class Privilegio
     public function getRespConcessao(): ?string
     {
         return (new ValidateParams())->validateStringComAcento($this->respConcessao);
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getLotacao(): ?string
-    {
-        return (new ValidateParams())->validateStringComAcento($this->lotacao);
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getFuncao(): ?string
-    {
-        return (new ValidateParams())->validateStringComAcento($this->funcao);
     }
 
     public function dataSerialize(): array

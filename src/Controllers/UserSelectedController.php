@@ -23,20 +23,19 @@ class UserSelectedController implements RequestHandlerInterface
             if (!isset($_POST) || $_POST == false || empty($_POST)) {
                 throw new Exception();
             }
-            $cpf = filter_var($request->getParsedBody()['cpf'], FILTER_SANITIZE_STRING);
+            $idUser = filter_var($request->getParsedBody()['id_user'], FILTER_SANITIZE_STRING);
             $user = new Usuario(
-                null, null, null,
-                null, null, $cpf, null,
-                null, null, null, null,
-                null, null, null,
-                null, null, null,
-                null, null, null,null,null
+                $idUser, null, null, null, null, null, null, null,
+                null, null, null, null, null, null,
+                null, null, null, null, null, null,
+                null, null
             );
-            $response = (new RepoUsers())->selectUser($user);
+            $response = (new RepoUsers())->selectUserByIdUser($user);
             return new Response(200, [], json_encode($response, JSON_UNESCAPED_UNICODE));
         } catch (Exception) {
-            $this->responseCatchError('Token inválido ou error nos verbos HTTPs');
-            exit;
+            $this->responseCatchError(
+                'Token inválido ou erro no POST campo necessário: id_user exatamente neste formato'
+            );
         }
     }
 }

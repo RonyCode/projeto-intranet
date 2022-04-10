@@ -52,14 +52,11 @@ class RepoPrivilegios extends GlobalConn implements PrivilegiosInterface
         $dataConcessao = (new ValidateParams())->dateFormatDbToBr($data['data_concessao']);
         return new Privilegio(
             $data['id_priv'],
-            $data['id_user'],
             $data['super_priv'],
             $data['servico'],
             $data['sub_servico'],
             $dataConcessao,
             $data['resp_concessao'],
-            $data['lotacao'],
-            $data['funcao']
         );
     }
 
@@ -69,12 +66,11 @@ class RepoPrivilegios extends GlobalConn implements PrivilegiosInterface
             $stmt = self::conn()->prepare(
                 "SELECT * FROM privilegio WHERE id_priv = :idPriv"
             );
-            $stmt->bindValue(':idPriv', $privilegio->getIdPriv());
+            $stmt->bindValue(':idPriv', $privilegio->getIdPriv(), PDO::PARAM_INT);
             $stmt->execute();
             if ($stmt->rowCount() <= 0) {
                 throw new Exception();
             }
-
             return $stmt->fetch();
         } catch (Exception) {
             $this->responseCatchError(
@@ -85,6 +81,9 @@ class RepoPrivilegios extends GlobalConn implements PrivilegiosInterface
 
     public function savePriv(Privilegio $privilegio): array
     {
+//        CHECK IF USER EXISTS
+//        $this->selectUserPriv($privilegio->getIdUser());
+//        VERIFY IF USER HAVE FOTO FOR ADD OR UPDATE
         if ($privilegio->getIdPriv()) {
             return self::updPriv($privilegio);
         } else {
@@ -92,27 +91,24 @@ class RepoPrivilegios extends GlobalConn implements PrivilegiosInterface
         }
     }
 
-
     private function updPriv(Privilegio $privilegio): array
     {
         try {
             $stmt = self::conn()->prepare(
                 'UPDATE privilegio SET 
-                    id_user = :idUser , super_priv = :superPriv, 
-                    servico = :servico, sub_servico = :subServico, 
-                    data_concessao = :dataConcessao, resp_concessao = :respConcessao,
-                    lotacao = :lotacao, funcao  = :funcao
+                    super_priv = :superPriv,
+                    servicos = :servico,
+                    sub_servico = :subServico, 
+                    data_concessao = :dataConcessao,
+                    resp_concessao = :respConcessao
                        WHERE id_priv = :idPriv'
             );
             $stmt->bindValue(':idPriv', $privilegio->getIdPriv(), PDO::PARAM_INT);
-            $stmt->bindValue(':idUser', $privilegio->getIdUser(), PDO::PARAM_INT);
             $stmt->bindValue(':superPriv', $privilegio->getSuperPriv(), PDO::PARAM_STR_CHAR);
             $stmt->bindValue(':servico', $privilegio->getServico(), PDO::PARAM_STR_CHAR);
             $stmt->bindValue(':subServico', $privilegio->getSubServico(), PDO::PARAM_STR_CHAR);
             $stmt->bindValue(':dataConcessao', $privilegio->getDataConcessao(), PDO::PARAM_STR_CHAR);
             $stmt->bindValue(':respConcessao', $privilegio->getRespConcessao(), PDO::PARAM_STR_CHAR);
-            $stmt->bindValue(':lotacao', $privilegio->getLotacao(), PDO::PARAM_STR_CHAR);
-            $stmt->bindValue(':funcao', $privilegio->getFuncao(), PDO::PARAM_STR_CHAR);
             $stmt->execute();
             if ($stmt->rowCount() <= 0) {
                 throw new Exception();
@@ -123,27 +119,19 @@ class RepoPrivilegios extends GlobalConn implements PrivilegiosInterface
         }
     }
 
-
     private function addPriv(Privilegio $privilegio): array
     {
         try {
             $stmt = self::conn()->prepare(
                 'INSERT INTO privilegio (
-                    id_user, super_priv, servico,
-                    sub_servico, data_concessao,
-                    resp_concessao, lotacao, funcao) 
-                       VALUES (:idUser, :superPriv, :servico,
-                               :subServico, :dataConcessao,
-                               :respConcessao, :lotacao, :funcao)'
+                                super_priv, servicos, sub_servico, data_concessao, resp_concessao) 
+                       VALUES (:superPriv, :servico, :subServico, :dataConcessao,:respConcessao)'
             );
-            $stmt->bindValue(':idUser', $privilegio->getIdUser(), PDO::PARAM_INT);
             $stmt->bindValue(':superPriv', $privilegio->getSuperPriv(), PDO::PARAM_STR_CHAR);
             $stmt->bindValue(':servico', $privilegio->getServico(), PDO::PARAM_STR_CHAR);
             $stmt->bindValue(':subServico', $privilegio->getSubServico(), PDO::PARAM_STR_CHAR);
             $stmt->bindValue(':dataConcessao', $privilegio->getDataConcessao(), PDO::PARAM_STR_CHAR);
             $stmt->bindValue(':respConcessao', $privilegio->getRespConcessao(), PDO::PARAM_STR_CHAR);
-            $stmt->bindValue(':lotacao', $privilegio->getLotacao(), PDO::PARAM_STR_CHAR);
-            $stmt->bindValue(':funcao', $privilegio->getFuncao(), PDO::PARAM_STR_CHAR);
             $stmt->execute();
             if ($stmt->rowCount() <= 0) {
                 throw new Exception();
@@ -167,6 +155,26 @@ class RepoPrivilegios extends GlobalConn implements PrivilegiosInterface
         } catch (Exception) {
             $this->responseCatchError("Privilégio não encontrado, ou já deletado.");
         }
+    }
+
+    private function selectUserPriv($idUser)
+    {
+        try {
+            $stmt = self::conn()->prepare(
+                "SELECT * FROM privilegio JOIN servico s on privilegio.sub_servico = s.sub_servico WHERE id_priv = :idPriv"
+            );
+            $stmt->bindValue(':idPriv', $idUser->getIdPriv(), PDO::PARAM_INT);
+            $stmt->execute();
+            if ($stmt->rowCount() <= 0) {
+                throw new Exception();
+            }
+            return $stmt->fetch();
+        } catch (Exception) {
+            $this->responseCatchError(
+                'privilégio não encontrado no banco de dados , confira o código de privilégio e tente novamente.'
+            );
+        }
+
     }
 
 }

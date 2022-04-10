@@ -34,7 +34,7 @@ class LoginController implements RequestHandlerInterface
             $response = (new RepoUsers())->userAuthToken($user);
             return new Response(200, [], json_encode($response, JSON_UNESCAPED_UNICODE));
         } catch (Exception) {
-            $this->responseCatchError('Não autenticado ou error nos verbos HTTPs');
+            $this->responseCatchError('Não autenticado ou error no POST campos necessários: cpf, senha exatamente neste formato');
             exit;
         }
     }

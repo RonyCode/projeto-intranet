@@ -11,7 +11,9 @@ use Api\Infra\GlobalConn;
 use Api\Interface\UserInterface;
 use Api\Model\Usuario;
 use Exception;
+use JetBrains\PhpStorm\ArrayShape;
 use JetBrains\PhpStorm\Pure;
+use PDO;
 use PDOStatement;
 
 class RepoUsers extends GlobalConn implements UserInterface
@@ -22,7 +24,6 @@ class RepoUsers extends GlobalConn implements UserInterface
     public function __construct()
     {
     }
-
 
     public function getAllUser(): array
     {
@@ -86,7 +87,7 @@ class RepoUsers extends GlobalConn implements UserInterface
     public function userAuthToken(Usuario $user): array
     {
         try {
-            $row = $this->selectUser($user);
+            $row = $this->selectUserByCPF($user);
             if (!password_verify($user->getSenha(), $row["senha"])) {
                 throw new Exception();
             }
@@ -108,14 +109,13 @@ class RepoUsers extends GlobalConn implements UserInterface
         }
     }
 
-    public function selectUser(Usuario $user): array
+    private function selectUserByCPF(Usuario $user): array
     {
         try {
             $stmt = self::conn()->prepare(
-                "SELECT * FROM usuario WHERE cpf = :cpf OR id_user = :idUser"
+                "SELECT * FROM usuario WHERE cpf = :cpf"
             );
-            $stmt->bindValue(':cpf', $user->getCpf());
-            $stmt->bindValue(':idUser', $user->getIdUser());
+            $stmt->bindValue(':cpf', $user->getCpf(), PDO::PARAM_INT);
             $stmt->execute();
             if ($stmt->rowCount() <= 0) {
                 throw new Exception();
@@ -129,10 +129,29 @@ class RepoUsers extends GlobalConn implements UserInterface
         }
     }
 
+    public function selectUserByIdUser(Usuario $user): array
+    {
+        try {
+            $stmt = self::conn()->prepare(
+                "SELECT * FROM usuario WHERE id_user = :idUser"
+            );
+            $stmt->bindValue(':idUser', $user->getIdUser(), PDO::PARAM_INT);
+            $stmt->execute();
+            if ($stmt->rowCount() <= 0) {
+                throw new Exception();
+            }
+            return $stmt->fetch();
+        } catch (Exception) {
+            $this->responseCatchError(
+                'Usuário com este ID não encontrado no banco de dados , tente novamente.'
+            );
+        }
+    }
+
     public function checkHashEmail(Usuario $user, $hash): array
     {
         try {
-            $stmt = $this->selectUser($user);
+            $stmt = $this->selectUserByCPF($user);
             $stmtHash = $this->selectHashTmp($user);
 
             //VERIFIED TWICE TABLE USER_AUTH AND HASH_TEMP AND HASH SENT FROM EMAIL NO EXPIRED
@@ -146,7 +165,7 @@ class RepoUsers extends GlobalConn implements UserInterface
             $hashOnce = self::conn()->prepare(
                 "UPDATE senha_respawn SET hash_temp = null WHERE cpf = :cpf"
             );
-            $hashOnce->bindValue(":cpf", $user->getCpf());
+            $hashOnce->bindValue(":cpf", $user->getCpf(), PDO::PARAM_STR_CHAR);
             $hashOnce->execute();
             return $this->resetPass($user);
         } catch (Exception) {
@@ -158,9 +177,9 @@ class RepoUsers extends GlobalConn implements UserInterface
     {
         try {
             //CHECKS IF USER EXIST AND CALL THE HASH VALID AND NO EXPIRED
-            $this->selectUser($user);
+            $this->selectUserByCPF($user);
             $hash_temp = self::conn()->prepare("SELECT * FROM senha_respawn  WHERE  cpf = :cpf");
-            $hash_temp->bindValue(":cpf", $user->getCpf());
+            $hash_temp->bindValue(":cpf", $user->getCpf(), PDO::PARAM_STR_CHAR);
             $hash_temp->execute();
             if ($hash_temp->rowCount() <= 0) {
                 throw  new Exception();
@@ -179,7 +198,7 @@ class RepoUsers extends GlobalConn implements UserInterface
             $stmt = self::conn()->prepare(
                 "UPDATE usuario SET senha = :pass WHERE cpf = :cpf"
             );
-            $stmt->bindValue(":cpf", $user->getCpf());
+            $stmt->bindValue(":cpf", $user->getCpf(), PDO::PARAM_STR_CHAR);
             $stmt->bindValue(":pass", password_hash($user->getSenha(), PASSWORD_ARGON2I));
             $stmt->execute();
             if ($stmt->rowCount() <= 0) {
@@ -201,17 +220,18 @@ class RepoUsers extends GlobalConn implements UserInterface
     {
 
         try {
-            $userFetch = $this->selectUser($user);
+            $userFetch = $this->selectUserByCPF($user);
             $stmtUp = self::conn()->prepare(
-                "INSERT INTO  senha_respawn (name_user, cpf, hash_temp, last_date_modif, date_expires) VALUES(:name, :cpf, :hash_temp, :last_date_modif, :date_expires) "
+                "INSERT INTO  senha_respawn (name_user, cpf, hash_temp, last_date_modif, date_expires) 
+                                           VALUES (:name, :cpf, :hash_temp, :last_date_modif, :date_expires) "
             );
 
-            $stmtUp->bindValue(":name", $userFetch["nome"]);
-            $stmtUp->bindValue(":cpf", $user->getCpf());
+            $stmtUp->bindValue(":name", $userFetch["nome"], PDO::PARAM_STR_CHAR);
+            $stmtUp->bindValue(":cpf", $user->getCpf(), PDO::PARAM_STR_CHAR);
             $stmtUp->bindValue(":hash_temp", password_hash($userFetch["email"], PASSWORD_ARGON2I));
-            $stmtUp->bindValue(":last_date_modif", date('Y-m-d H:i:s'));
+            $stmtUp->bindValue(":last_date_modif", date('Y-m-d H:i:s'), PDO::PARAM_STR_CHAR);
             //HASH TEMP EXPIRES AFTER 24 HOURS CHECK THE FOLDER CONFIG , AND EVENT MYSQL ON CONFIG.PHP
-            $stmtUp->bindValue(":date_expires", date('Y-m-d H:i:s', (strtotime('+ 24 hour'))));
+            $stmtUp->bindValue(":date_expires", date('Y-m-d H:i:s', (strtotime('+ 24 hour'))), PDO::PARAM_STR_CHAR);
             $stmtUp->execute();
             if ($stmtUp->rowCount() <= 0) {
                 throw  new Exception();
@@ -233,22 +253,22 @@ class RepoUsers extends GlobalConn implements UserInterface
                 'code' => 201,
                 "message" => "Email enviado para recuperar sua senha"
             ];
-
         } catch (Exception) {
             $this->responseCatchError("Usuário não encontrado, verifique se o CPF está correto");
         }
     }
 
+    #[ArrayShape(['data' => "bool", 'status' => "string", 'code' => "int", "message" => "string"])]
     public function addUser(Usuario $user): array
     {
         try {
 //            CONFIG FIELDS CPF AND EMAIL UNIQUE REGISTER FOR NO ERRORS!!! SEE FOLDER CONFIG FILE CONFIG.PHP
-            $stmt = self::conn()->prepare(
-                "INSERT INTO usuario (matricula,cpf, nascimento,email,senha) VALUES (:matricula, :cpf, :dataNasc, :email, :senha);");
-            $stmt->bindValue(':matricula', $user->getMatricula());
-            $stmt->bindValue(':cpf', $user->getCpf());
-            $stmt->bindValue(':dataNasc', $user->getNascimento());
-            $stmt->bindValue(':email', $user->getEmail());
+            $stmt = self::conn()->prepare("INSERT INTO usuario (matricula, cpf, nascimento, email, senha)
+                                                             VALUES (:matricula, :cpf, :dataNasc, :email, :senha)");
+            $stmt->bindValue(':matricula', $user->getMatricula(), PDO::PARAM_STR_CHAR);
+            $stmt->bindValue(':cpf', $user->getCpf(), PDO::PARAM_STR_CHAR);
+            $stmt->bindValue(':dataNasc', $user->getNascimento(), PDO::PARAM_STR_CHAR);
+            $stmt->bindValue(':email', $user->getEmail(), PDO::PARAM_STR_CHAR);
             $stmt->bindValue(':senha', password_hash($user->getSenha(), PASSWORD_ARGON2I));
             $stmt->execute();
             if ($stmt->rowCount() <= 0) {

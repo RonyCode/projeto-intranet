@@ -20,8 +20,8 @@ class UserPhotoSaveController implements RequestHandlerInterface
         try {
             empty($_FILES) ? throw new Exception() :
                 $image = ($request->withUploadedFiles($_FILES['photo']))->getUploadedFiles();
-            isset($_POST['id_user']) ? $idUser = filter_var($request->getParsedBody()['id_user'],
-                FILTER_VALIDATE_INT) : throw new  Exception();
+            isset($_POST['id_user'])
+                ? $idUser = filter_var($request->getParsedBody()['id_user'], FILTER_VALIDATE_INT) : throw new  Exception();
 
             // UsuarioFoto Class have custom sizes for more performance
             $img = new UsuarioFoto($image, $idUser, 220, 220);
@@ -29,7 +29,9 @@ class UserPhotoSaveController implements RequestHandlerInterface
 
             return new Response(200, [], str_replace('\\', '', json_encode($response)));
         } catch (Exception) {
-            $this->responseCatchError('Imagem não selecionada ou erro com id imagem.');
+            $this->responseCatchError(
+                'Imagem não selecionada ou POST errado, campos necessários: id_user, photo exatamente neste formato.'
+            );
         }
     }
 }

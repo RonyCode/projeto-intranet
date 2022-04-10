@@ -33,7 +33,7 @@ class LoginRecoverPassController implements RequestHandlerInterface
         $response = (new RepoUsers())->recoverPass($user);
         return new Response(200, [], json_encode($response, JSON_UNESCAPED_UNICODE));
         } catch (Exception) {
-            $this->responseCatchError('Verifique o email correto ou error nos verbos HTTPs');
+            $this->responseCatchError('Verifique o email correto ou error no POST campos necessários: cpf exatamente neste formato');
         }
     }
 }

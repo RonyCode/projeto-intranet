@@ -23,12 +23,11 @@ class RepoFotos extends GlobalConn implements ImageInterface
         try {
             //CHECK IF USER EXISTS
             $this->selectUserFoto($foto->getIdUser());
-            //VERIFY IF USER HAVE FOTO OR NO FOR ADD OR UPDATE
+            //VERIFY IF USER HAVE FOTO FOR ADD OR UPDATE
             if (self::selectFoto($foto)) {
                 return self::updFoto($foto);
             }
             return self::addFoto($foto);
-
         } catch (Exception) {
             $this->responseCatchError('Não foi possível SALVAR foto do usuário tente novamente');
         }
@@ -38,7 +37,8 @@ class RepoFotos extends GlobalConn implements ImageInterface
     {
         try {
             $stmt = self::conn()->prepare(
-                "SELECT * FROM usuario where id_user=:idUser");
+                "SELECT * FROM usuario where id_user=:idUser"
+            );
             $stmt->bindValue(':idUser', $idUser);
             $stmt->execute();
             if ($stmt->rowCount() <= 0) {
@@ -54,7 +54,8 @@ class RepoFotos extends GlobalConn implements ImageInterface
     {
         try {
             $stmt = self::conn()->prepare(
-                "SELECT * FROM usuario_foto JOIN usuario u on usuario_foto.id_foto = u.id_foto WHERE id_user=:idUser");
+                "SELECT * FROM usuario_foto JOIN usuario u on usuario_foto.id_foto = u.id_foto WHERE id_user=:idUser"
+            );
             $stmt->bindValue(':idUser', $foto->getIdUser());
             $stmt->execute();
             if ($stmt->rowCount() <= 0) {
@@ -110,7 +111,8 @@ class RepoFotos extends GlobalConn implements ImageInterface
             (new UploadImages())->saveImgResized($foto, true);
             $pdo = self::conn();
             $stmt = $pdo->prepare(
-                'INSERT INTO usuario_foto (nome_foto, src, tamanho) VALUES(:fotoNome,:src,:tamanho)');
+                'INSERT INTO usuario_foto (nome_foto, src, tamanho) VALUES(:fotoNome,:src,:tamanho)'
+            );
             $stmt->bindValue(':fotoNome', $foto->getPhotoNameRandomized());
             $stmt->bindValue(':src', $foto->getPhotoSrc());
             $stmt->bindValue(':tamanho', 'width_' .

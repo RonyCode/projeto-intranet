@@ -17,7 +17,7 @@ class LoginResetPassController implements RequestHandlerInterface
     public function handle(ServerRequestInterface $request): Response
     {
         try {
-            $hash = filter_var($request->getQueryParams()['hash'], FILTER_SANITIZE_STRING);
+            $hash = filter_var($request->getParsedBody()['hash'], FILTER_SANITIZE_STRING);
             $cpf = filter_var($request->getParsedBody()['cpf'], FILTER_SANITIZE_STRING);
             $pass = filter_var($request->getParsedBody()['senha'], FILTER_SANITIZE_STRING);
 
@@ -27,12 +27,15 @@ class LoginResetPassController implements RequestHandlerInterface
                 null, null, null, null,
                 null, null, null,
                 null, null, null,
-                null, null, null,null,null
+                null, null, null, null, null
             );
             $response = (new RepoUsers())->checkHashEmail($user, $hash);
             return new Response(200, [], json_encode($response, JSON_UNESCAPED_UNICODE));
         } catch (Exception) {
-            $this->responseCatchError('Hash não recebido pelo email');
+            $this->responseCatchError(
+                'Hash não recebido pelo email ou erro no POST campo necessário:
+                 hash, cpf, senha exatamente neste formato'
+            );
         }
     }
 }

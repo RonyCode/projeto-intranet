@@ -21,7 +21,6 @@ class Router
         $url = '/' . implode('/', $urlArr);
         $offSetId = array_search("id", $urlArr);
         $id = implode(array_slice($urlArr, $offSetId, 1));
-
         return [$id, $url];
     }
 
