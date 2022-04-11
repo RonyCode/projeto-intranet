@@ -25,19 +25,23 @@ class MilitarSaveController implements RequestHandlerInterface
             $nome = filter_var($_POST['nome'], FILTER_SANITIZE_STRING);
             $nomeGuerra = filter_var($_POST['nome_guerra'], FILTER_SANITIZE_STRING);
             $postoGraduacao = filter_var($_POST['posto_graduacao'], FILTER_SANITIZE_STRING);
+            $matricula = filter_var($_POST['matricula'], FILTER_SANITIZE_STRING);
             $rgMilitar = filter_var($_POST['rg_militar'], FILTER_SANITIZE_STRING);
             $tipoSanguee = filter_var($_POST['tipo_sangue'], FILTER_SANITIZE_STRING);
             $funcao = filter_var($_POST['funcao'], FILTER_SANITIZE_STRING);
+            $situacao = filter_var($_POST['situacao'], FILTER_SANITIZE_STRING);
 
             $militar = new Militar(
                 $id | null,
                 $nome,
                 $nomeGuerra,
                 $postoGraduacao,
+                $matricula,
                 $rgMilitar,
                 $tipoSanguee,
                 $lotacao | null,
                 $funcao,
+                $situacao
             );
             var_dump($militar);
 

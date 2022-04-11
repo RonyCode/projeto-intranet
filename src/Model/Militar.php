@@ -9,10 +9,12 @@ class Militar
         private ?string $nome,
         private ?string $nomeGuerra,
         private ?string $postoGraduacao,
+        private ?string $matricula,
         private ?string $rgMilitar,
         private ?string $tipoSangue,
         private ?string $lotacao,
-        private ?string $funcao
+        private ?string $funcao,
+        private ?string $situacao
     )
     {
     }
@@ -52,6 +54,14 @@ class Militar
     /**
      * @return string|null
      */
+    public function getMatricula(): ?string
+    {
+        return $this->matricula;
+    }
+
+    /**
+     * @return string|null
+     */
     public function getRgMilitar(): ?string
     {
         return $this->rgMilitar;
@@ -79,6 +89,14 @@ class Militar
     public function getFuncao(): ?string
     {
         return $this->funcao;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getSituacao(): ?string
+    {
+        return $this->situacao;
     }
 
     public function dataSerialize(): array

@@ -11,17 +11,19 @@ date_default_timezone_set('America/Araguaina');
 $pdo = new PDO("mysql:host=localhost;dbname=intranet", "root", "170286P@ra");
 $pdoAPi = new PDO("mysql:host=localhost;dbname=intranet_api", "root", "170286P@ra");
 
-//$stmt = $pdo->prepare("SELECT * FROM RH_UNIDADE");
-//$stmt->execute();
-//$rows = $stmt->fetchAll();
-//if ($stmt->rowCount() > 0) {
+//$stmtAPi = $pdoAPi->prepare("SELECT * FROM privilegio");
+//$stmtAPi->execute();
+//$rows = $stmtAPi->fetchAll();
+//
+//if ($stmtAPi->rowCount() > 0) {
 //    foreach ($rows as $item) {
-//        $pdoAPi = new PDO("mysql:host=localhost;dbname=intranet_api", "root", "170286P@ra");
-//        $stmtA = $pdoAPi->prepare(
-//            "UPDATE  unidade  SET cmt_und = null, sub_cmt_und = null WHERE id_und = id_und
+//        $stmt = $pdoAPi->prepare("INSERT INTO privilégios1 (modulo, servico, sub_servico, status)
+//                    VALUES(:modulo,:servico,:sub_servico,:status)");
 //
-//         ");
-//
-//        $stmtA->execute();
+//        $stmt->bindValue(":modulo", $item["nodulo"]);
+//        $stmt->bindValue(":servico", $item["servico"]);
+//        $stmt->bindValue(":sub_servico", $item["sub_servico"]);
+//        $stmt->bindValue(":status", $item["status"]);
+//        $stmt->execute();
 //    }
-}
+//}

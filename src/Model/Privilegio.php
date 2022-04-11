@@ -9,9 +9,7 @@ use Api\Helper\ValidateParams;
 class Privilegio
 {
     public function __construct(
-
         private ?int $idPriv,
-        private ?string $superPriv,
         private ?string $servico,
         private ?string $subServico,
         private ?string $dataConcessao,
